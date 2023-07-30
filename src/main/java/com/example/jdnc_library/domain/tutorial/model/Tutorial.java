@@ -1,5 +1,6 @@
-package com.example.jdnc_library.domain.tutorial;
+package com.example.jdnc_library.domain.tutorial.model;
 
+import com.example.jdnc_library.domain.WriterEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,13 +13,18 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tutorial {
+public class Tutorial extends WriterEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String showColumn1;
+    private String title;
 
-    private Integer showColumn2;
+    private String content;
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
