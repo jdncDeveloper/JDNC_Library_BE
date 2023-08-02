@@ -18,6 +18,6 @@ public class LmsLoginInfo {
 
     @Override
     public String toString() {
-        return String.format("{mb_id: %s}");
+        return "{mb_id: %s}";
     }
 }

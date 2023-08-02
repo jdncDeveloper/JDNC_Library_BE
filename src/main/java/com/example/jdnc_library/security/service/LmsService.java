@@ -1,6 +1,7 @@
 package com.example.jdnc_library.security.service;
 
 import com.example.jdnc_library.security.model.LmsLoginInfo;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -23,11 +24,16 @@ public class LmsService {
 
     private final String loginUrl = "https://lms.jdnc.or.kr/auth/login_check";
 
-    public String getNameWithLogin (LmsLoginInfo lmsLoginInfo)
-        throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    @PostConstruct
+    public void init() throws NoSuchAlgorithmException, KeyManagementException {
         //ssl 우회인증
         setSSL();
-        lmsLoginInfo = decryptedInfo(lmsLoginInfo);
+    }
+
+    public String getNameWithLogin (LmsLoginInfo lmsLoginInfo)
+        throws IOException {
+        //암호화 해제
+        decryptedInfo(lmsLoginInfo);
         //조회
         Document document = Jsoup.connect(loginUrl)
             .timeout(50000)
@@ -66,8 +72,8 @@ public class LmsService {
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
     }
 
-    private LmsLoginInfo decryptedInfo (LmsLoginInfo lmsLoginInfo) {
-        return lmsLoginInfo;
+    private void decryptedInfo (LmsLoginInfo lmsLoginInfo) {
+
     }
 
 }
