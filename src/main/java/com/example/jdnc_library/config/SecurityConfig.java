@@ -10,12 +10,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CorsFilter corsFilter;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -33,6 +36,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests((registry)-> registry.anyRequest().permitAll());
 
         http.httpBasic(AbstractHttpConfigurer::disable);
+
+        http.formLogin(AbstractHttpConfigurer::disable);
+
+        http.addFilter(corsFilter);
 
         return http.build();
     }
