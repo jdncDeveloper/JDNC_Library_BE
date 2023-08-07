@@ -37,7 +37,7 @@ public class LmsService {
         //조회
         Document document = Jsoup.connect(loginUrl)
             .timeout(50000)
-            .data("mb_id", lmsLoginInfo.getUserNumber(), "mb_password", lmsLoginInfo.getPassword()).post();
+            .data("mb_id", lmsLoginInfo.getUsername(), "mb_password", lmsLoginInfo.getPassword()).post();
 
         Elements userWelcomeSpans = document.getElementsByClass("user_welcome");
 

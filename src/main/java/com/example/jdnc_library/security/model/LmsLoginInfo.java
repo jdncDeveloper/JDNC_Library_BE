@@ -1,7 +1,6 @@
 package com.example.jdnc_library.security.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LmsLoginInfo {
 
-    private String userNumber;
+    private String username;
 
     private String password;
 

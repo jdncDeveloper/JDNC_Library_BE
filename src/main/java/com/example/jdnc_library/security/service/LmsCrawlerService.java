@@ -12,7 +12,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -48,7 +47,7 @@ public class LmsCrawlerService {
     }
 
     public LmsUserInfo getLmsLoginInfo (LmsLoginInfo lmsLoginInfo) {
-        HttpHeaders headers = loginAndGetCookie(lmsLoginInfo.getUserNumber(), lmsLoginInfo.getPassword());
+        HttpHeaders headers = loginAndGetCookie(lmsLoginInfo.getUsername(), lmsLoginInfo.getPassword());
         return getPersonalInfo(headers);
     }
 

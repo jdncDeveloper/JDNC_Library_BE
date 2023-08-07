@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 src/main/resources/application-devdb.yml
 src/main/resources/application-localdb.yml
+src/main/resources/application-secret.yml
 
 ### STS ###
 .apt_generated
