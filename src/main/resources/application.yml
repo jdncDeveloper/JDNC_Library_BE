@@ -6,9 +6,18 @@ spring:
     group:
       local:
         - localdb
+        - secret
+
+      production:
+        - production
+        - secret
 
   jpa:
     hibernate:
       ddl-auto: update
     open-in-view: false
     show-sql: true
+
+lms:
+  login-url: https://lms.jdnc.or.kr/auth/login_check
+  my-info-url: https://lms.jdnc.or.kr/mypage/myInfo
