@@ -28,6 +28,8 @@ public class Member {
     //AA/B/CC/DDD
     private String mbNumber;
 
+    private String password;
+
     private String name;
 
     private String email;
@@ -35,8 +37,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Member (String mbNumber, String name, String email, Role role) {
+    public Member (String mbNumber, String password, String name, String email, Role role) {
         this.mbNumber = mbNumber;
+        this.password = password;
         this.name = name;
         this.email = email;
         this.role = role;
@@ -46,5 +49,11 @@ public class Member {
         if (mbNumber == null) return 0;
         if (mbNumber.length() != 8) return 0;
         return Integer.parseInt(mbNumber.substring(3, 5));
+    }
+
+    public void update(String name, String encodedPassword, String email) {
+        this.password = encodedPassword;
+        this.name = name;
+        this.email = email;
     }
 }

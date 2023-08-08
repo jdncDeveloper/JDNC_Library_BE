@@ -8,6 +8,10 @@ spring:
         - localdb
         - secret
 
+      production:
+        - production
+        - secret
+
   jpa:
     hibernate:
       ddl-auto: update

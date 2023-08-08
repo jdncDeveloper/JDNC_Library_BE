@@ -2,10 +2,8 @@ package com.example.jdnc_library.security.model;
 
 
 import com.example.jdnc_library.domain.member.model.Member;
-import com.example.jdnc_library.domain.member.model.Role;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,7 +31,7 @@ public class PrincipalDetails implements UserDetails { //이렇게 하면 Authen
 
     @Override
     public String getPassword() {
-        return null;
+        return member.getPassword();
     }
 
     @Override

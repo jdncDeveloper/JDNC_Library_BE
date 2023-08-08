@@ -3,7 +3,10 @@ package com.example.jdnc_library.security.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jdnc_library.security.model.LmsLoginInfo;
+import com.example.jdnc_library.security.model.LmsTotalInfo;
+import com.example.jdnc_library.security.model.LmsUserInfo;
 import com.example.jdnc_library.security.model.PrincipalDetails;
+import com.example.jdnc_library.security.service.LmsCrawlerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,34 +14,30 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
-@Component
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String TOKEN_START_WITH = "Bearer ";
     private final ObjectMapper objectMapper;
-
-//    //authenticationManager로 로그인 시도를 하면 principalDetailsService 가 실행됨
-    private final AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
     private final String accessSecret;
-    private final String refreshSecret;
+    private final LmsCrawlerService lmsCrawlerService;
 
-    public JwtAuthenticationFilter (ObjectMapper objectMapper,
+    public JwtAuthenticationFilter (
         AuthenticationManager authenticationManager,
-        @Value("${jwt.access}") String access,
-        @Value("${jwt.refresh}") String refresh) {
+        ObjectMapper objectMapper,
+        String access,
+        LmsCrawlerService lmsCrawlerService) {
         this.authenticationManager = authenticationManager;
         this.objectMapper = objectMapper;
         this.accessSecret = access;
-        this.refreshSecret = refresh;
+        this.lmsCrawlerService = lmsCrawlerService;
     }
 
     @Override
@@ -47,6 +46,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         try {
             LmsLoginInfo lmsLoginInfo = objectMapper.readValue(request.getInputStream(), LmsLoginInfo.class);
+
+            LmsTotalInfo lmsTotalInfo  = lmsCrawlerService.getLmsLoginInfo(lmsLoginInfo);
+
             UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(lmsLoginInfo.getUsername(), lmsLoginInfo.getPassword());
 
