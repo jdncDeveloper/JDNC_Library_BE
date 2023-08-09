@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -17,11 +18,15 @@ public class CollectionInfo extends WriterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private BookInfo bookInfo;
 
     @Column(unique = true, nullable = false)
     private Long bookNumber;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private boolean lost;
 
     public CollectionInfo(BookInfo bookInfo, Long bookNumber){
         this.bookInfo = bookInfo;

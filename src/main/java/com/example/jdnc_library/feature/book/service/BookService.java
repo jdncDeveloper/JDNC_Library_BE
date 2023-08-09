@@ -51,7 +51,7 @@ public class BookService {
      * @return
      */
     public List<BookDTO> searchBooks(String title, Pageable pageable) {
-        return collectionRepository.findAllByBook_TitleContaining(title, pageable)
+        return collectionRepository.findAllByBookInfo_TitleContaining(title, pageable)
                 .getContent()
                 .stream()
                 .map(BookDTO::of)
@@ -134,8 +134,8 @@ public class BookService {
      * 아직 미반납인 책 리스트를 리턴(Admin)
      * @return List<BorrowDTO>
      */
-    public List<BorrowDTO> searchNotReturnBooks() {
-        List<BorrowInfo> notReturnedBorrows = borrowRepository.findByReturnDateIsNull().getContent();
+    public List<BorrowDTO> searchNotReturnBooks(Pageable pageable) {
+        List<BorrowInfo> notReturnedBorrows = borrowRepository.findByReturnDateIsNull(pageable).getContent();
 
         return notReturnedBorrows.stream()
                 .map(BorrowDTO::of)

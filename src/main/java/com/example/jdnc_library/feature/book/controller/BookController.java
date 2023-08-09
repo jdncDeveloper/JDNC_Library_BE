@@ -17,7 +17,7 @@ public class BookController {
      * 책 정보 추가
      * @param bookRequest
      */
-    @PostMapping
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     private void createBook(@RequestBody BookRequest bookRequest){
         bookService.saveBook(bookRequest);
@@ -28,7 +28,7 @@ public class BookController {
      * @param id
      * @param bookRequest
      */
-    @PostMapping
+    @PostMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private void updateBook(
             @RequestParam(value = "id") Long id,
@@ -41,7 +41,7 @@ public class BookController {
      * @param bookNumber
      * @param id
      */
-    @PostMapping
+    @PostMapping("/addnumber")
     @ResponseStatus(HttpStatus.CREATED)
     private void createCollection(
             @RequestParam(value = "bookNumber") Long bookNumber,

@@ -18,7 +18,7 @@ public class BorrowInfo extends WriterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private CollectionInfo collectionInfo;
 
     @Column
