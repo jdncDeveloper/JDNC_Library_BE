@@ -1,13 +1,12 @@
 package com.example.jdnc_library.feature.book.model;
 
-import com.example.jdnc_library.domain.book.model.Book;
+import com.example.jdnc_library.domain.book.model.BookInfo;
 import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookRequest {
-    private Long bookNumber;
 
     private String title;
 
@@ -19,8 +18,8 @@ public class BookRequest {
 
     private String publisher;
 
-    public Book toEntity() {
-        return new Book(
+    public BookInfo toEntity() {
+        return new BookInfo(
                 null,
                 title,
                 image,

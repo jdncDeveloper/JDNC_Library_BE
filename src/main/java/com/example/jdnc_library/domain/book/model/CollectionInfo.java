@@ -1,6 +1,7 @@
 package com.example.jdnc_library.domain.book.model;
 
 import com.example.jdnc_library.domain.WriterEntity;
+import jakarta.annotation.Priority;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +18,13 @@ public class CollectionInfo extends WriterEntity {
     private Long id;
 
     @ManyToOne
-    private Book book;
+    private BookInfo bookInfo;
 
     @Column(unique = true, nullable = false)
     private Long bookNumber;
+
+    public CollectionInfo(BookInfo bookInfo, Long bookNumber){
+        this.bookInfo = bookInfo;
+        this.bookNumber = bookNumber;
+    }
 }

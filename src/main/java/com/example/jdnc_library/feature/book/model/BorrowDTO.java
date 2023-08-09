@@ -20,19 +20,28 @@ public class BorrowDTO {
 
     private LocalDateTime borrowDate;
 
+    private String image;
+
     private String title;
+
+    private String author;
+
+    private String publisher;
 
     private LocalDateTime returnDate;
 
-    //TODO: 저자 이미지 추가 필요 대출자능여부 boolean type만들기
+    //TODO: 대출가능여부 boolean type만들기
 
 
     public static BorrowDTO of(BorrowInfo borrowInfo) {
         BorrowDTO borrowDTO = new BorrowDTO();
         borrowDTO.setBorrowId(borrowInfo.getId());
-        borrowDTO.setBorrowerName(borrowInfo.getCreatedBy().toString());
+        borrowDTO.setBorrowerName(borrowInfo.getCreatedBy().getName());
         borrowDTO.setBorrowDate(borrowInfo.getCreatedAt());
-        borrowDTO.setTitle(borrowInfo.getCollectionInfo().getBook().getTitle());
+        borrowDTO.setImage(borrowInfo.getCollectionInfo().getBookInfo().getImage());
+        borrowDTO.setTitle(borrowInfo.getCollectionInfo().getBookInfo().getTitle());
+        borrowDTO.setAuthor(borrowInfo.getCollectionInfo().getBookInfo().getAuthor());
+        borrowDTO.setPublisher(borrowInfo.getCollectionInfo().getBookInfo().getPublisher());
         return borrowDTO;
     }
 }

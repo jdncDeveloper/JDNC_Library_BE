@@ -1,6 +1,8 @@
 package com.example.jdnc_library.domain.book.repository;
 
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +14,5 @@ public interface CollectionRepository extends JpaRepository<CollectionInfo, Inte
 
     Optional<CollectionInfo> findByBookNumber(Long bookNumber);
 
-    List<CollectionInfo> findAllByBook_TitleContaining(String title);
+    Page<CollectionInfo> findAllByBook_TitleContaining(String title, Pageable pageable);
 }

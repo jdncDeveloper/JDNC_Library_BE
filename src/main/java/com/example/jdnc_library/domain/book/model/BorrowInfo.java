@@ -18,22 +18,17 @@ public class BorrowInfo extends WriterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Long borrowerId;
-
     @OneToOne
     private CollectionInfo collectionInfo;
 
     @Column
     private LocalDateTime returnDate;
 
-    public BorrowInfo(Long borrowerId, CollectionInfo collectionInfo){
-        this.borrowerId = borrowerId;
+    public BorrowInfo(CollectionInfo collectionInfo){
         this.collectionInfo = collectionInfo;
     }
 
-    public BorrowInfo(Long borrowerId, CollectionInfo collectionInfo, LocalDateTime returnDate){
-        this.borrowerId = borrowerId;
+    public BorrowInfo(CollectionInfo collectionInfo, LocalDateTime returnDate){
         this.collectionInfo = collectionInfo;
         this.returnDate = returnDate;
     }

@@ -1,6 +1,6 @@
 package com.example.jdnc_library.feature.book.model;
 
-import com.example.jdnc_library.domain.book.model.Book;
+import com.example.jdnc_library.domain.book.model.BookInfo;
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,18 +25,18 @@ public class BookDTO {
 
     private String publisher;
 
-    public static BookDTO of(Book book) {
-        return new BookDTO(book.getId(), book.getTitle(), book.getImage(), book.getContent(), book.getAuthor(), book.getPublisher());
+    public static BookDTO of(BookInfo bookInfo) {
+        return new BookDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getContent(), bookInfo.getAuthor(), bookInfo.getPublisher());
     }
 
 
     public static BookDTO of (CollectionInfo  collectionInfo){
         BookDTO bookDTO = new BookDTO();
-        bookDTO.setTitle(collectionInfo.getBook().getTitle());
-        bookDTO.setImage(collectionInfo.getBook().getImage());
-        bookDTO.setContent(collectionInfo.getBook().getContent());
-        bookDTO.setAuthor(collectionInfo.getBook().getAuthor());
-        bookDTO.setPublisher(collectionInfo.getBook().getPublisher());
+        bookDTO.setTitle(collectionInfo.getBookInfo().getTitle());
+        bookDTO.setImage(collectionInfo.getBookInfo().getImage());
+        bookDTO.setContent(collectionInfo.getBookInfo().getContent());
+        bookDTO.setAuthor(collectionInfo.getBookInfo().getAuthor());
+        bookDTO.setPublisher(collectionInfo.getBookInfo().getPublisher());
         return bookDTO;
     }
 }
