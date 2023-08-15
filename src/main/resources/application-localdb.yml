@@ -1,7 +1,0 @@
-spring:
-  datasource:
-    #cj는 mysql Connector/J 8.x 이상부터 사용
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: Simsim12!
-    url: jdbc:mysql://localhost:3306/jdnclib
