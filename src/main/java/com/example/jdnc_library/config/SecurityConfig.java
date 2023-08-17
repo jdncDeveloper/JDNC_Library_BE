@@ -35,10 +35,6 @@ public class SecurityConfig {
 
     private final String access;
 
-    private final UserDetailsService userDetailsService;
-
-    private final PasswordEncoder passwordEncoder;
-
     private final LmsCrawlerService lmsCrawlerService;
 
     public SecurityConfig (
@@ -53,8 +49,6 @@ public class SecurityConfig {
         this.corsFilter = corsFilter;
         this.objectMapper = objectMapper;
         this.access = access;
-        this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
         this.lmsCrawlerService = lmsCrawlerService;
     }
 
@@ -68,6 +62,9 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
+
+        http.cors(AbstractHttpConfigurer::disable);
+
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests((registry)-> registry.anyRequest().permitAll());
