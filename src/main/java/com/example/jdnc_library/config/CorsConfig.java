@@ -1,5 +1,7 @@
 package com.example.jdnc_library.config;
 
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -18,14 +20,14 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         //모든 ip 응답 허용
-//        config.addAllowedOrigin("*"); // setAllowCredentials랑 같이 쓰지 못함
-        config.addAllowedOriginPattern("*");
+//        config.addAllowedOrigin("*"); // setAllowCredentials를 쓰면 AllowedOrignsPatterns 를 써야함
+        config.setAllowedOriginPatterns(List.of("*"));
 
         //모든 header 응답 허용
-        config.addAllowedHeader("*");
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 
         //모든 요청 메소드 허용
-        config.addAllowedMethod("*");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         source.registerCorsConfiguration("/**",config);
         return new CorsFilter(source);
     }
