@@ -2,9 +2,9 @@ package com.example.jdnc_library.security.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.example.jdnc_library.exception.clienterror._401.NotLoginException;
 import com.example.jdnc_library.security.model.LmsLoginInfo;
 import com.example.jdnc_library.security.model.LmsTotalInfo;
-import com.example.jdnc_library.security.model.LmsUserInfo;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import com.example.jdnc_library.security.service.LmsCrawlerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,9 +46,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         try {
             LmsLoginInfo lmsLoginInfo = objectMapper.readValue(request.getInputStream(), LmsLoginInfo.class);
+            try {
+                LmsTotalInfo lmsTotalInfo  = lmsCrawlerService.getLmsLoginInfo(lmsLoginInfo);
 
-            LmsTotalInfo lmsTotalInfo  = lmsCrawlerService.getLmsLoginInfo(lmsLoginInfo);
-
+            }catch (NotLoginException e) {
+                response.sendError(401, e.getMessage());
+                return null;
+            }
             UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(lmsLoginInfo.getUsername(), lmsLoginInfo.getPassword());
 
