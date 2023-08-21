@@ -15,4 +15,8 @@ public interface CollectionRepository extends JpaRepository<CollectionInfo, Inte
     Optional<CollectionInfo> findByBookNumber(Long bookNumber);
 
     Page<CollectionInfo> findAllByBookInfo_TitleContaining(String title, Pageable pageable);
+
+    List<CollectionInfo> findByBookInfo_id(Long bookInfoId);
+
+    CollectionInfo findById(Long id);
 }

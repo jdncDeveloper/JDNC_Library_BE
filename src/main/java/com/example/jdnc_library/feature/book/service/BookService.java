@@ -8,14 +8,13 @@ import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
-import com.example.jdnc_library.feature.book.model.BookDTO;
-import com.example.jdnc_library.feature.book.model.BorrowDTO;
-import com.example.jdnc_library.feature.book.model.BookRequest;
+import com.example.jdnc_library.feature.book.model.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Book;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,11 +33,11 @@ public class BookService {
      * @param id
      * @return
      */
-    public BookDTO getBookById(Long id){
+    public BookDetailDTO getBookById(long id){
         Optional<BookInfo> book = bookRepository.findById(id);
         if (book.isPresent()) {
             BookInfo newBookInfo = book.get();
-            return new BookDTO(id, newBookInfo.getTitle(), newBookInfo.getImage(), newBookInfo.getContent(), newBookInfo.getAuthor(), newBookInfo.getPublisher());
+            return new BookDetailDTO(id, newBookInfo.getTitle(), newBookInfo.getImage(), newBookInfo.getContent(), newBookInfo.getAuthor(), newBookInfo.getPublisher(),available(newBookInfo.getId()));
         }
         else {
             return null;
@@ -46,23 +45,40 @@ public class BookService {
     }
 
     /**
+     * 대출 가능 여부 확인
+     * @param id
+     * @return
+     */
+
+    public boolean available(long id){
+        List<CollectionInfo> collectionInfo = collectionRepository.findByBookInfo_id(id);
+
+        return collectionInfo.stream().anyMatch(CollectionInfo::isAvailable);
+    }
+
+    /**
      * 제목으로 검색했을 때 검색어가 포함된 모든 항목을 리턴
      * @param title
      * @return
      */
-    public List<BookDTO> searchBooks(String title, Pageable pageable) {
-        return collectionRepository.findAllByBookInfo_TitleContaining(title, pageable)
-                .getContent()
+    public List<BookListDTO> searchBooks(String title, Pageable pageable) {
+        Page<CollectionInfo> collectionPage = collectionRepository.findAllByBookInfo_TitleContaining(title, pageable);
+
+        return collectionPage.getContent()
                 .stream()
-                .map(BookDTO::of)
+                .map(BookListDTO::of)
                 .collect(Collectors.toList());
     }
 
-    public List<BookDTO> searchBooksByTitle(String title, Pageable pageable){
-        List<BookInfo> bookInfoList = bookRepository.findAllByTitleContaining(title, pageable).getContent();
+    public List<BookListDTO> searchBooksByTitle(String title, Pageable pageable){
+        Page<BookInfo> bookInfoList = bookRepository.findAllByTitleContaining(title, pageable);
 
-        return bookInfoList.stream()
-                .map(book -> new BookDTO(book.getId(), book.getTitle(), book.getImage(), book.getContent(), book.getAuthor(), book.getPublisher()))
+        return bookInfoList.getContent()
+                .stream()
+                .map(bookInfo -> {
+                    boolean availableForBorrow = available(bookInfo.getId());
+                    return BookListDTO.of(bookInfo, availableForBorrow);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -71,22 +87,29 @@ public class BookService {
      * @param bookNumber
      * @return
      */
-    public BookDTO qrBook(Long bookNumber){
+    public BorrowDetailDTO qrBook(long bookNumber){
         Optional<CollectionInfo> collectionInfoOptional = collectionRepository.findByBookNumber(bookNumber);
         CollectionInfo collectionInfo = collectionInfoOptional.get();
-        return BookDTO.of(collectionInfo);
+        return BorrowDetailDTO.of(collectionInfo);
     }
 
     /**
      * 책을 빌릴 때 데이터베이스에 저장
      * @param bookNumber
      */
-    public void borrowBook(Long bookNumber){
-        CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
-                .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
+    @Transactional
+    public void borrowBook(long bookNumber){
+        try{
+            CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
+                    .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
 
-        BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
-        borrowRepository.save(borrowInfo);
+            BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
+            borrowRepository.save(borrowInfo);
+            collectionInfo.updateAvailable(false);
+            collectionRepository.save(collectionInfo);
+        } catch (Exception e){
+
+        }
     }
 
     /**
@@ -94,11 +117,11 @@ public class BookService {
      * @param member
      * @return
      */
-    public List<BorrowDTO> returnBookList(Member member, Pageable pageable){
+    public List<BorrowListDTO> returnBookList(Member member, Pageable pageable){
         List<BorrowInfo> borrowInfoList = borrowRepository.findAllByCreatedByAndReturnDateIsNull(member, pageable).getContent();
 
         return borrowInfoList.stream()
-                .map(BorrowDTO::of)
+                .map(BorrowListDTO::of)
                 .collect(Collectors.toList());
     }
 
@@ -106,7 +129,7 @@ public class BookService {
      * 책 한권을 반납하면 데이터베이스에 저장
      * @param bookNumber
      */
-    public void returnBook(Long bookNumber){
+    public void returnBook(long bookNumber){
         Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findByCollectionInfo_BookNumber(bookNumber);
         BorrowInfo borrowInfo = borrowInfoOptional.get();
         borrowInfo.returnBook(LocalDateTime.now());
@@ -119,14 +142,14 @@ public class BookService {
      * @param month
      * @return
      */
-    public List<BorrowDTO> searchBooksReturnedInMonth(int year, int month, Pageable pageable) {
+    public List<BorrowListDTO> searchBooksReturnedInMonth(int year, int month, Pageable pageable) {
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
         List<BorrowInfo> returnedInMonth = borrowRepository.findByReturnDateBetween(startOfMonth, endOfMonth, pageable).getContent();
 
         return returnedInMonth.stream()
-                .map(BorrowDTO::of)
+                .map(BorrowListDTO::of)
                 .collect(Collectors.toList());
     }
 
@@ -134,11 +157,11 @@ public class BookService {
      * 아직 미반납인 책 리스트를 리턴(Admin)
      * @return List<BorrowDTO>
      */
-    public List<BorrowDTO> searchNotReturnBooks(Pageable pageable) {
+    public List<BorrowListDTO> searchNotReturnBooks(Pageable pageable) {
         List<BorrowInfo> notReturnedBorrows = borrowRepository.findByReturnDateIsNull(pageable).getContent();
 
         return notReturnedBorrows.stream()
-                .map(BorrowDTO::of)
+                .map(BorrowListDTO::of)
                 .collect(Collectors.toList());
 
 
@@ -149,12 +172,12 @@ public class BookService {
      * @param id
      * @param bookRequest
      */
-    public void updateBook(Long id, BookRequest bookRequest){
+    public void updateBook(long id, BookRequest bookRequest){
         BookInfo bookInfo = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, BookInfo.class));
 
         bookInfo.update( bookRequest.getTitle(), bookRequest.getImage(), bookRequest.getContent(), bookRequest.getAuthor(), bookRequest.getPublisher());
     }
-
+    // TODO : 책정보 추가 수정필요
     /**
      * 책 정보 추가(Admin)
      * 제목과 저자, 출판사가 동일하면 같은 책으로 규정
@@ -185,7 +208,7 @@ public class BookService {
      * @exception CollectionInfo 존재할 경우
      */
 
-    public void addBookNumber(Long bookNumber, Long id){
+    public void addBookNumber(long bookNumber, Long id){
         Optional<CollectionInfo> existingCollection = collectionRepository.findByBookNumber(bookNumber);
 
         if(existingCollection.isPresent()){
@@ -196,6 +219,23 @@ public class BookService {
             BookInfo bookInfo =book.get();
             CollectionInfo collectionInfo = new CollectionInfo(bookInfo, bookNumber);
             collectionRepository.save(collectionInfo);
+        }
+    }
+
+    /**
+     * 반납 최종 확인(Admin)
+     * @param id
+     */
+    public void adminCheck(int id){
+        try{
+            BorrowInfo borrowInfo = borrowRepository.getById(id);
+            borrowInfo.updateAdminCheck(true);
+            borrowRepository.save(borrowInfo);
+            CollectionInfo collectionInfo = collectionRepository.findById(borrowInfo.getCollectionInfo().getId());
+            collectionInfo.updateAvailable(true);
+            collectionRepository.save(collectionInfo);
+        } catch (EntityNotFoundException e){
+            throw new EntityNotFoundException();
         }
     }
 }

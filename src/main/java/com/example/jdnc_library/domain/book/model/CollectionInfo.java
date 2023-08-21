@@ -25,11 +25,19 @@ public class CollectionInfo extends WriterEntity {
     private Long bookNumber;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    private boolean available;
+
+    @Column(nullable = false)
     private boolean lost;
 
     public CollectionInfo(BookInfo bookInfo, Long bookNumber){
         this.bookInfo = bookInfo;
         this.bookNumber = bookNumber;
+        this.available = true;
+        this.lost = false;
+    }
+
+    public void updateAvailable(boolean availableChange){
+        this.available = availableChange;
     }
 }

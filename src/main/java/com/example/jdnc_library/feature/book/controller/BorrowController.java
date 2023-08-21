@@ -1,19 +1,18 @@
 package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.domain.ResponseData;
-import com.example.jdnc_library.feature.book.model.BookDTO;
-import com.example.jdnc_library.feature.book.model.BorrowDTO;
+import com.example.jdnc_library.feature.book.model.BorrowDetailDTO;
+import com.example.jdnc_library.feature.book.model.BorrowListDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -34,7 +33,7 @@ public class BorrowController {
     @GetMapping("/qrbook")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
-    private ResponseData<BookDTO> qrBook(
+    private ResponseData<BorrowDetailDTO> qrBook(
             @RequestParam(value = "bookNumber") Long bookNumber){
         return new ResponseData<>(bookService.qrBook(bookNumber));
     }
@@ -57,7 +56,7 @@ public class BorrowController {
      */
     @GetMapping("/returnlist")
     @ResponseStatus(HttpStatus.OK)
-    private ResponseData<List<BorrowDTO>> returnList(
+    private ResponseData<List<BorrowListDTO>> returnList(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault Pageable pageable){
         return new ResponseData<>(bookService.returnBookList(principalDetails.getMember(), pageable));
