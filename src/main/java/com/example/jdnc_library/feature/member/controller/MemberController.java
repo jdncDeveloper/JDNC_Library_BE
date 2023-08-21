@@ -4,13 +4,11 @@ import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.feature.manager.model.StatusNResultDTO;
 import com.example.jdnc_library.feature.member.model.MemberDTO;
 import com.example.jdnc_library.feature.member.service.MemberService;
-import com.example.jdnc_library.security.model.PrincipalDetails;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,6 +27,7 @@ public class MemberController {
      */
     @GetMapping({"", "/"})
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "유저 정보 요청", description = "현재 로그인 되어있는 유저의 정보를 리턴")
     public ResponseEntity<MemberDTO> getMember() {
         MemberDTO memberDTO = memberService.getMember();
 
@@ -40,6 +39,7 @@ public class MemberController {
      */
     @GetMapping("/role")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Role 요청", description = "현재 로그인 되어있는 유저의 Role 리턴")
     public String getRole() {
         Role role = memberService.getRole();
 
@@ -54,6 +54,7 @@ public class MemberController {
      */
     @GetMapping("/list")
     //    @Secured("ROLE_MANAGER")
+    @Operation(summary = "유저 리스트 요청", description = "모든 유저 리스트를 리턴")
     public ResponseEntity<?> getMemberList(Pageable pageable) {
         StatusNResultDTO result = memberService.getMemberList(pageable);
         if(result.isCheck()) {

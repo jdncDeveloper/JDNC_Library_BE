@@ -3,6 +3,7 @@ package com.example.jdnc_library.feature.manager.controller;
 import com.example.jdnc_library.feature.member.model.MemberDTO;
 import com.example.jdnc_library.feature.manager.model.StatusNResultDTO;
 import com.example.jdnc_library.feature.manager.service.ManagerService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class ManagerController {
      */
     @GetMapping("/book-keeper")
 //    @Secured("ROLE_MANAGER")
+    @Operation(summary = "도서지기 정보 요청", description = "현재 임명되어 있는 도서지기들의 정보를 리턴")
     public ResponseEntity<?> getBookKeeper() {
         StatusNResultDTO result = managerService.getBookKeeper();
         if(result.isCheck()) {
@@ -43,6 +45,7 @@ public class ManagerController {
      */
     @PostMapping("/book-keeper")
 //    @Secured("ROLE_MANAGER")
+    @Operation(summary = "도서지기 임명", description = "해당 유저를 도서지기로 임명(Role 변경)")
     public ResponseEntity<String> setBookKeeper(@RequestBody MemberDTO bookKeeperDTO) {
         StatusNResultDTO result = managerService.setBookKeeper(bookKeeperDTO.getMbNumber());
 
@@ -59,6 +62,7 @@ public class ManagerController {
 
     @DeleteMapping("/book-keeper")
 //    @Secured("ROLE_MANAGER")
+    @Operation(summary = "도서지기 해임", description = "해당 유저를 도서지기에서 해임(Role 변경)")
     public ResponseEntity<?> deleteBookKeeper(@RequestBody MemberDTO bookKeeperDTO) {
         StatusNResultDTO result = managerService.deleteBookKeeper(bookKeeperDTO.getMbNumber());
 
