@@ -21,7 +21,7 @@ public class SearchController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    private ResponseData<List<BookListDTO>> getBookList(
+    public ResponseData<List<BookListDTO>> getBookList(
             @PageableDefault Pageable pageable,
             @RequestParam(value = "title", required = false) String title) {
         return new ResponseData<>(bookService.searchBooks(title, pageable));

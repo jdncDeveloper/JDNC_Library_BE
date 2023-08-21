@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/book")
+@RequestMapping("/admin/book")
 public class BookController {
 
     private final BookService bookService;
@@ -19,7 +19,7 @@ public class BookController {
      */
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    private void createBook(@RequestBody BookRequest bookRequest){
+    public void createBook(@RequestBody BookRequest bookRequest){
         bookService.saveBook(bookRequest);
     }
 
@@ -30,7 +30,7 @@ public class BookController {
      */
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private void updateBook(
+    public void updateBook(
             @RequestParam(value = "id") Long id,
             @RequestBody BookRequest bookRequest){
         bookService.updateBook(id, bookRequest);
@@ -43,7 +43,7 @@ public class BookController {
      */
     @PostMapping("/addnumber")
     @ResponseStatus(HttpStatus.CREATED)
-    private void createCollection(
+    public void createCollection(
             @RequestParam(value = "bookNumber") Long bookNumber,
             @RequestParam(value = "id") Long id){
         bookService.addBookNumber(bookNumber,id);
