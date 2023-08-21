@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,8 @@ public class BorrowController {
     @GetMapping("/qrbook")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
-    private ResponseData<BorrowDetailDTO> qrBook(
+    @Transactional
+    public ResponseData<BorrowDetailDTO> qrBook(
             @RequestParam(value = "bookNumber") Long bookNumber){
         return new ResponseData<>(bookService.qrBook(bookNumber));
     }
@@ -45,7 +47,7 @@ public class BorrowController {
      */
     @GetMapping("/borrowbook")
     @ResponseStatus(HttpStatus.CREATED)
-    private void borrowBook(
+    public void borrowBook(
             @RequestParam(value = "bookNumber") Long bookNumber){
         bookService.borrowBook(bookNumber);
     }
@@ -56,7 +58,7 @@ public class BorrowController {
      */
     @GetMapping("/returnlist")
     @ResponseStatus(HttpStatus.OK)
-    private ResponseData<List<BorrowListDTO>> returnList(
+    public ResponseData<List<BorrowListDTO>> returnList(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault Pageable pageable){
         return new ResponseData<>(bookService.returnBookList(principalDetails.getMember(), pageable));
@@ -68,7 +70,7 @@ public class BorrowController {
      */
     @GetMapping("/return")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private void returnBook(
+    public void returnBook(
             @RequestParam(value = "bookNumber") Long bookNumber){
         bookService.returnBook(bookNumber);
     }
