@@ -11,9 +11,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookDTO {
+public class BookDetailDTO {
 
-    private Long id;
+    private long id;
 
     private String title;
 
@@ -25,18 +25,22 @@ public class BookDTO {
 
     private String publisher;
 
-    public static BookDTO of(BookInfo bookInfo) {
-        return new BookDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getContent(), bookInfo.getAuthor(), bookInfo.getPublisher());
+    private boolean available;
+
+    public static BookDetailDTO of(BookInfo bookInfo, boolean available) {
+        return new BookDetailDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getContent(), bookInfo.getAuthor(), bookInfo.getPublisher(), available);
     }
 
 
-    public static BookDTO of (CollectionInfo  collectionInfo){
-        BookDTO bookDTO = new BookDTO();
+    public static BookDetailDTO of (CollectionInfo  collectionInfo){
+        BookDetailDTO bookDTO = new BookDetailDTO();
+        bookDTO.setId(collectionInfo.getBookInfo().getId());
         bookDTO.setTitle(collectionInfo.getBookInfo().getTitle());
         bookDTO.setImage(collectionInfo.getBookInfo().getImage());
         bookDTO.setContent(collectionInfo.getBookInfo().getContent());
         bookDTO.setAuthor(collectionInfo.getBookInfo().getAuthor());
         bookDTO.setPublisher(collectionInfo.getBookInfo().getPublisher());
+        bookDTO.setAvailable(collectionInfo.isAvailable());
         return bookDTO;
     }
 }

@@ -18,23 +18,28 @@ public class BorrowInfo extends WriterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private CollectionInfo collectionInfo;
+
+    @Column
+    private boolean adminCheck;
 
     @Column
     private LocalDateTime returnDate;
 
     public BorrowInfo(CollectionInfo collectionInfo){
         this.collectionInfo = collectionInfo;
+        this.adminCheck = false;
+        this.returnDate = null;
     }
 
-    public BorrowInfo(CollectionInfo collectionInfo, LocalDateTime returnDate){
-        this.collectionInfo = collectionInfo;
-        this.returnDate = returnDate;
-    }
 
     public void returnBook(LocalDateTime returnDate){
         this.returnDate = returnDate;
+    }
+
+    public void updateAdminCheck(boolean newAdminCheck) {
+        this.adminCheck = newAdminCheck;
     }
 
 }
