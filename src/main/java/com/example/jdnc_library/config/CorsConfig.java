@@ -23,7 +23,10 @@ public class CorsConfig {
 //        config.addAllowedOrigin("*"); // setAllowCredentials를 쓰면 AllowedOrignsPatterns 를 써야함
         config.setAllowedOriginPatterns(List.of("*"));
 
-        //모든 header 응답 허용
+        //헤더 추출 가능
+        config.setExposedHeaders(List.of("Authorization"));
+
+        //특정헤더 응답허용
         config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 
         //모든 요청 메소드 허용
