@@ -1,4 +1,4 @@
-package com.example.jdnc_library.feature.manager.model;
+package com.example.jdnc_library.feature.member.model;
 
 import com.example.jdnc_library.domain.member.model.Role;
 import jakarta.persistence.EnumType;

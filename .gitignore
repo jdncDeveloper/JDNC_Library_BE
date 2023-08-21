@@ -10,6 +10,7 @@ src/main/resources/application-devdb.yml
 src/main/resources/application-localdb.yml
 src/main/resources/application-secret.yml
 src/main/resources/application-production.yml
+src/main/resources/application-smtp.yml
 
 
 ### STS ###
