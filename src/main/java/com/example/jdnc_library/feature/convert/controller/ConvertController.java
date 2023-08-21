@@ -1,6 +1,7 @@
 package com.example.jdnc_library.feature.convert.controller;
 
 import com.example.jdnc_library.feature.convert.service.ConvertToExelFileService;
+import io.swagger.v3.oas.annotations.Operation;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class ConvertController {
     private final ConvertToExelFileService convertToExelFileService;
 
     @PostMapping("/excel")
+    @Operation(summary = "엑셀 다운로드", description = "특정 기간의 대여현황을 엑셀 파일로 변환하여 리턴")
     public ResponseEntity<ByteArrayResource> ConvertToExelFile()
         throws IOException {
 
