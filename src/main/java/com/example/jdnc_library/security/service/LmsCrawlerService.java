@@ -22,7 +22,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -34,6 +38,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service
 public class LmsCrawlerService {
+
     private final RestTemplate restTemplate;
 
     private final String loginUrl;
@@ -65,19 +70,21 @@ public class LmsCrawlerService {
 
     /**
      * lms 로그인 인증 및 정보 취득
+     *
      * @param lmsLoginInfo Lms 로그인 정보
      * @return 총체적인 Lms 정보
      */
-    public LmsTotalInfo getLmsLoginInfo (LmsLoginInfo lmsLoginInfo) {
-        HttpHeaders headers = loginAndGetCookie(lmsLoginInfo.getUsername(), lmsLoginInfo.getPassword());
+    public LmsTotalInfo getLmsLoginInfo(LmsLoginInfo lmsLoginInfo) {
+        HttpHeaders headers = loginAndGetCookie(lmsLoginInfo.getUsername(),
+            lmsLoginInfo.getPassword());
         LmsUserInfo lmsUserInfo = getLmsUserInfo(headers);
 
         Member member = memberRepository.findByMbNumber(lmsLoginInfo.getUsername());
         LmsTotalInfo lmsTotalInfo;
         if (member == null) {
             lmsTotalInfo = LmsTotalInfo.of(createNewMember(lmsLoginInfo, lmsUserInfo));
-        }else {
-            lmsTotalInfo = LmsTotalInfo.of(validateMember(member, lmsLoginInfo ,lmsUserInfo));
+        } else {
+            lmsTotalInfo = LmsTotalInfo.of(validateMember(member, lmsLoginInfo, lmsUserInfo));
         }
 
         return lmsTotalInfo;
@@ -85,8 +92,9 @@ public class LmsCrawlerService {
 
     /**
      * db에 유저정보 없을시 유저정보 삽입
+     *
      * @param lmsLoginInfo Lms 로그인 정보
-     * @param lmsUserInfo Lms 유저정보
+     * @param lmsUserInfo  Lms 유저정보
      * @return 새로 생성된 멤버
      */
     private Member createNewMember(LmsLoginInfo lmsLoginInfo, LmsUserInfo lmsUserInfo) {
@@ -95,21 +103,25 @@ public class LmsCrawlerService {
             passwordEncoder.encode(lmsLoginInfo.getPassword()),
             lmsUserInfo.getName(),
             lmsUserInfo.getEmail(),
+            null,
             Role.ROLE_USER
         ));
     }
 
     /**
      * db에 유저정보 있을시 유저정보 조회 및 최신화
-     * @param member db entity
+     *
+     * @param member       db entity
      * @param lmsLoginInfo Lms 로그인 정보
-     * @param lmsUserInfo Lms 유저정보
+     * @param lmsUserInfo  Lms 유저정보
      * @return 업데이트 된 멤버
      */
 
-    private Member validateMember(Member member, LmsLoginInfo lmsLoginInfo, LmsUserInfo lmsUserInfo) {
+    private Member validateMember(Member member, LmsLoginInfo lmsLoginInfo,
+        LmsUserInfo lmsUserInfo) {
         boolean flag = false;
-        if (member.getPassword() == null || !passwordEncoder.matches(lmsLoginInfo.getPassword(), member.getPassword())) {
+        if (member.getPassword() == null || !passwordEncoder.matches(lmsLoginInfo.getPassword(),
+            member.getPassword())) {
             flag = true;
         }
 
@@ -133,7 +145,8 @@ public class LmsCrawlerService {
 
     /**
      * Lms 로그인 및 쿠키 탈취
-     * @param mbNumber 로그인 id
+     *
+     * @param mbNumber   로그인 id
      * @param mbPassword 로그인 pw
      * @return
      */
@@ -146,15 +159,18 @@ public class LmsCrawlerService {
         requestBody.add("mb_id", mbNumber);
         requestBody.add("mb_password", mbPassword);
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody,
+            headers);
 
-        ResponseEntity<String> responseEntity = restTemplate.exchange(loginUrl, HttpMethod.POST, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(loginUrl, HttpMethod.POST,
+            requestEntity, String.class);
 
         return responseEntity.getHeaders();
     }
 
     /**
      * 헤더를 이용하여 lms 내 정보 가져오기
+     *
      * @param beforeHeaders 로그인 완료 헤더
      * @return lms 유저정보
      */
@@ -173,10 +189,11 @@ public class LmsCrawlerService {
 
     /**
      * 헤더를 이용하여 페이지 response 조회
+     *
      * @param beforeHeaders 로그인 정보 헤더
      * @return response
      */
-    private String getMyInfoPageBody (HttpHeaders beforeHeaders) {
+    private String getMyInfoPageBody(HttpHeaders beforeHeaders) {
         HttpHeaders headers = new HttpHeaders();
         List<String> cookies = beforeHeaders.get("Set-Cookie");
 
@@ -185,35 +202,39 @@ public class LmsCrawlerService {
         }
 
         //뒤에 cookie 2개를 때야함
-        headers.put("Cookie", cookies.subList(0,2));
+        headers.put("Cookie", cookies.subList(0, 2));
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> responseEntity = restTemplate.exchange(personalInfoUrl, HttpMethod.GET, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(personalInfoUrl,
+            HttpMethod.GET, requestEntity, String.class);
 
         return responseEntity.getBody();
     }
 
     /**
      * html 에서 이메일 파싱
+     *
      * @param html
      * @return email
      */
-    private String parsePersonalEmail (String html) {
+    private String parsePersonalEmail(String html) {
         return parsePersonalInfo(html, "mb_email");
     }
 
     /**
      * html 에서 이름 파싱
+     *
      * @param html
      * @return email
      */
-    private String parsePersonalName (String html) {
+    private String parsePersonalName(String html) {
         return parsePersonalInfo(html, "mb_name");
     }
 
     /**
      * html 에서 정보 파싱
+     *
      * @param html
      * @param inputName
      * @return
@@ -223,24 +244,30 @@ public class LmsCrawlerService {
         try {
             Document doc = Jsoup.parse(html);
 
-            Element nameInput = doc.selectFirst("input[name="+inputName+"]");
+            Element nameInput = doc.selectFirst("input[name=" + inputName + "]");
 
             if (nameInput != null) {
                 return nameInput.attr("value");
             } else {
                 throw new NotLoginException("로그인에 실패했습니다.");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new NotLoginException("로그인에 실패했습니다.");
         }
     }
 
     private void setSSL() throws KeyManagementException, NoSuchAlgorithmException {
         //ssl 우회인증
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
-            public X509Certificate[] getAcceptedIssuers(){return new X509Certificate[0];}
-            public void checkClientTrusted(X509Certificate[] certs, String authType){}
-            public void checkServerTrusted(X509Certificate[] certs, String authType){}
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
         }};
 
         SSLContext sc = SSLContext.getInstance("TLS");
