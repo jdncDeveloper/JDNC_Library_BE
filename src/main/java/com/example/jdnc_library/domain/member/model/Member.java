@@ -1,6 +1,5 @@
 package com.example.jdnc_library.domain.member.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,15 +33,22 @@ public class Member {
 
     private String email;
 
+    private String refresh;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Member (String mbNumber, String password, String name, String email, Role role) {
+    public Member (String mbNumber, String password, String name, String email, String refresh, Role role) {
         this.mbNumber = mbNumber;
         this.password = password;
         this.name = name;
         this.email = email;
+        this.refresh = refresh;
         this.role = role;
+    }
+
+    public void updateRefresh(String refresh) {
+        this.refresh = refresh;
     }
 
     public int getPeriod() {
