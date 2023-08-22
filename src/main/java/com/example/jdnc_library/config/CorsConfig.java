@@ -27,7 +27,7 @@ public class CorsConfig {
         config.setExposedHeaders(List.of("Authorization", "Authorization-Refresh"));
 
         //특정헤더 응답허용
-        config.setAllowedHeaders(Arrays.asList("Authorization","Authorization-Refresh", "Cache-Control", "Content-Type"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Authorization-Refresh", "Cache-Control", "Content-Type"));
 
         //모든 요청 메소드 허용
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
