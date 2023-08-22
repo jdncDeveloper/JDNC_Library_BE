@@ -1,5 +1,6 @@
-package com.example.jdnc_library.feature.book.model;
+package com.example.jdnc_library.feature.book.DTO;
 
+import com.example.jdnc_library.domain.book.model.BookGroup;
 import com.example.jdnc_library.domain.book.model.BookInfo;
 import lombok.*;
 
@@ -18,6 +19,8 @@ public class BookRequest {
 
     private String publisher;
 
+    private String bookGroup;
+
     public BookInfo toEntity() {
         return new BookInfo(
                 null,
@@ -25,7 +28,8 @@ public class BookRequest {
                 image,
                 content,
                 author,
-                publisher
+                publisher,
+                BookGroup.fromValue(bookGroup)
         );
     }
 }

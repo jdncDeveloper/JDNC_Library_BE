@@ -1,6 +1,6 @@
 package com.example.jdnc_library.feature.book.controller;
 
-import com.example.jdnc_library.feature.book.model.BookRequest;
+import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/book")
+@RequestMapping("/book")
 public class BookController {
 
     private final BookService bookService;

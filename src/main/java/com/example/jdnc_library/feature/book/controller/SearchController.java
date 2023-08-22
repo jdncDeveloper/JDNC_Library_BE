@@ -1,8 +1,8 @@
 package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.domain.ResponseData;
-import com.example.jdnc_library.feature.book.model.BookDetailDTO;
-import com.example.jdnc_library.feature.book.model.BookListDTO;
+import com.example.jdnc_library.feature.book.DTO.BookDetailDTO;
+import com.example.jdnc_library.feature.book.DTO.BookListDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class SearchController {
 
     private final BookService bookService;
 
-    @GetMapping
+    @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<List<BookListDTO>> getBookList(
             @PageableDefault Pageable pageable,
@@ -37,9 +37,14 @@ public class SearchController {
 
     }
 
-//    @GetMapping("/")
-//    @ResponseStatus(HttpStatus.OK)
-//    private ResponseData<>
+    @GetMapping("/detail")
+    @ResponseStatus(HttpStatus.OK)
+    private ResponseData<BookDetailDTO> getBookDetail(
+            @RequestParam(value = "id") long id){
+        BookDetailDTO bookDetailDTO = bookService.getBookById(id);
+
+        return new ResponseData<>(bookDetailDTO);
+    }
 
 
 }

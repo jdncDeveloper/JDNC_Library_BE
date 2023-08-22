@@ -1,5 +1,6 @@
 package com.example.jdnc_library.feature.book.service;
 
+import com.example.jdnc_library.domain.book.model.BookGroup;
 import com.example.jdnc_library.domain.book.model.BookInfo;
 import com.example.jdnc_library.domain.book.model.BorrowInfo;
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
@@ -8,7 +9,7 @@ import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
-import com.example.jdnc_library.feature.book.model.*;
+import com.example.jdnc_library.feature.book.DTO.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,7 @@ public class BookService {
         Optional<BookInfo> book = bookRepository.findById(id);
         if (book.isPresent()) {
             BookInfo newBookInfo = book.get();
-            return new BookDetailDTO(id, newBookInfo.getTitle(), newBookInfo.getImage(), newBookInfo.getContent(), newBookInfo.getAuthor(), newBookInfo.getPublisher(),available(newBookInfo.getId()));
+            return new BookDetailDTO(id, newBookInfo.getTitle(), newBookInfo.getImage(), newBookInfo.getContent(), newBookInfo.getAuthor(), newBookInfo.getPublisher(), newBookInfo.getBookGroup(), available(newBookInfo.getId()));
         }
         else {
             return null;
@@ -187,7 +188,7 @@ public class BookService {
     public void updateBook(long id, BookRequest bookRequest){
         BookInfo bookInfo = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, BookInfo.class));
 
-        bookInfo.update( bookRequest.getTitle(), bookRequest.getImage(), bookRequest.getContent(), bookRequest.getAuthor(), bookRequest.getPublisher());
+        bookInfo.update( bookRequest.getTitle(), bookRequest.getImage(), bookRequest.getContent(), bookRequest.getAuthor(), bookRequest.getPublisher(), bookRequest.getBookGroup());
     }
     // TODO : 책정보 추가 수정필요
     /**

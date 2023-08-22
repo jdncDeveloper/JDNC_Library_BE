@@ -1,8 +1,8 @@
 package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.domain.ResponseData;
-import com.example.jdnc_library.feature.book.model.BorrowDetailDTO;
-import com.example.jdnc_library.feature.book.model.BorrowListDTO;
+import com.example.jdnc_library.feature.book.DTO.BorrowDetailDTO;
+import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import lombok.RequiredArgsConstructor;

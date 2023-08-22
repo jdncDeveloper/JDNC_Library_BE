@@ -31,12 +31,16 @@ public class BookInfo extends WriterEntity {
     @Column(nullable = false)
     private String publisher;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BookGroup bookGroup;
 
-    public void update(String title, String image, String content, String author, String publisher){
+    public void update(String title, String image, String content, String author, String publisher, String value){
         this.title = title;
         this.image = image;
         this.content = content;
         this.author = author;
         this.publisher = publisher;
+        this.bookGroup = BookGroup.fromValue(value);
     }
 }
