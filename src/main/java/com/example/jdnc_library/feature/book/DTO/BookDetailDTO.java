@@ -1,4 +1,4 @@
-package com.example.jdnc_library.feature.book.model;
+package com.example.jdnc_library.feature.book.DTO;
 
 import com.example.jdnc_library.domain.book.model.BookInfo;
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
@@ -25,10 +25,12 @@ public class BookDetailDTO {
 
     private String publisher;
 
+    private Enum bookGroup;
+
     private boolean available;
 
     public static BookDetailDTO of(BookInfo bookInfo, boolean available) {
-        return new BookDetailDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getContent(), bookInfo.getAuthor(), bookInfo.getPublisher(), available);
+        return new BookDetailDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getContent(), bookInfo.getAuthor(), bookInfo.getPublisher(), bookInfo.getBookGroup(),available);
     }
 
 
@@ -40,6 +42,7 @@ public class BookDetailDTO {
         bookDTO.setContent(collectionInfo.getBookInfo().getContent());
         bookDTO.setAuthor(collectionInfo.getBookInfo().getAuthor());
         bookDTO.setPublisher(collectionInfo.getBookInfo().getPublisher());
+        bookDTO.setBookGroup(collectionInfo.getBookInfo().getBookGroup());
         bookDTO.setAvailable(collectionInfo.isAvailable());
         return bookDTO;
     }
