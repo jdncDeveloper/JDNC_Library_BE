@@ -32,7 +32,7 @@ public class TokenProvider {
     public String createAccessToken(Member member) {
         return JWT.create()
             .withSubject("jdnc_library_access_token")
-            .withExpiresAt(new Date(System.currentTimeMillis() + (60000)))
+            .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 10)))
             .withClaim("id", member.getId())
             .sign(Algorithm.HMAC512(accessSecret));
     }
