@@ -32,7 +32,7 @@ public class TokenProvider {
     public String createAccessToken(Member member) {
         return JWT.create()
             .withSubject("jdnc_library_access_token")
-            .withExpiresAt(new Date(System.currentTimeMillis() + (6000)))
+            .withExpiresAt(new Date(System.currentTimeMillis() + (60000)))
             .withClaim("id", member.getId())
             .sign(Algorithm.HMAC512(accessSecret));
     }
@@ -41,7 +41,7 @@ public class TokenProvider {
         return JWT.create()
             .withSubject("jdnc_library_refresh_token")
             .withClaim("random_seed", String.valueOf(Math.random()))
-            .withExpiresAt(new Date(System.currentTimeMillis() + (6000)))
+            .withExpiresAt(new Date(System.currentTimeMillis() + (6000000)))
             .sign(Algorithm.HMAC512(refreshSecret));
     }
 
