@@ -23,6 +23,7 @@ public class BorrowController {
     /*@AuthenticationPrincipal PrincipalDetails principalDetails
     principalDetails.getMember() == 로그인한 사용자의 멤버엔티티
      */
+    //TODO: @transactional 처리하기
 
     private final BookService bookService;
 
@@ -58,6 +59,7 @@ public class BorrowController {
      */
     @GetMapping("/returnlist")
     @ResponseStatus(HttpStatus.OK)
+    @Transactional
     public ResponseData<List<BorrowListDTO>> returnList(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault Pageable pageable){

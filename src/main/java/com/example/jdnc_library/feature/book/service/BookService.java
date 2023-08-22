@@ -83,6 +83,22 @@ public class BookService {
     }
 
     /**
+     * 모든 책 리턴
+     * @return
+     */
+    public List<BookListDTO> searchAllBooks(Pageable pageable){
+        Page<BookInfo> bookInfoList = bookRepository.findAll(pageable);
+
+        return bookInfoList.getContent()
+                .stream()
+                .map(bookInfo -> {
+                    boolean availableForBorrow = available(bookInfo.getId());
+                    return BookListDTO.of(bookInfo, availableForBorrow);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 책의 QR을 찍었을 때 책 정보 리턴
      * @param bookNumber
      * @return
@@ -99,17 +115,13 @@ public class BookService {
      */
     @Transactional
     public void borrowBook(long bookNumber){
-        try{
-            CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
-                    .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
 
-            BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
-            borrowRepository.save(borrowInfo);
-            collectionInfo.updateAvailable(false);
-            collectionRepository.save(collectionInfo);
-        } catch (Exception e){
+        CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
+                .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
 
-        }
+        BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
+        borrowRepository.save(borrowInfo);
+        collectionInfo.updateAvailable(false);
     }
 
     /**

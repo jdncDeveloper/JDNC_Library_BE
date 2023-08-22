@@ -4,6 +4,7 @@ import com.example.jdnc_library.domain.ResponseData;
 import com.example.jdnc_library.feature.book.model.BookDetailDTO;
 import com.example.jdnc_library.feature.book.model.BookListDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,7 +25,16 @@ public class SearchController {
     public ResponseData<List<BookListDTO>> getBookList(
             @PageableDefault Pageable pageable,
             @RequestParam(value = "title", required = false) String title) {
-        return new ResponseData<>(bookService.searchBooks(title, pageable));
+
+        List<BookListDTO> bookList;
+        if (StringUtils.isEmpty(title)) {
+            bookList = bookService.searchAllBooks(pageable);
+        } else {
+            bookList = bookService.searchBooksByTitle(title, pageable);
+        }
+
+        return new ResponseData<>(bookList);
+
     }
 
 //    @GetMapping("/")

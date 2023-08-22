@@ -1,12 +1,15 @@
 package com.example.jdnc_library.feature.book.model;
 
 import com.example.jdnc_library.domain.book.model.BorrowInfo;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Setter
 @Getter
@@ -18,7 +21,13 @@ public class BorrowListDTO {
 
     private String borrowerName;
 
-    private LocalDateTime borrowDate;
+    /**
+     * 날짜 표기 JSON변환설정
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate borrowDate;
+
+    private long bookNumber;
 
     private String image;
 
@@ -30,15 +39,32 @@ public class BorrowListDTO {
 
     private String publisher;
 
-    private LocalDateTime returnDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate returnDate;
 
 
+    @JsonProperty("borrowDate")
+    public String getBorrowDate() {
+        if (borrowDate != null) {
+            return borrowDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        return null;
+    }
+
+    @JsonProperty("returnDate")
+    public String getReturnDate() {
+        if (returnDate != null) {
+            return returnDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        return null;
+    }
 
     public static BorrowListDTO of(BorrowInfo borrowInfo) {
         BorrowListDTO borrowListDTO = new BorrowListDTO();
         borrowListDTO.setBorrowId(borrowInfo.getId());
         borrowListDTO.setBorrowerName(borrowInfo.getCreatedBy().getName());
-        borrowListDTO.setBorrowDate(borrowInfo.getCreatedAt());
+        borrowListDTO.setBorrowDate(LocalDate.from(borrowInfo.getCreatedAt()));
+        borrowListDTO.setBookNumber(borrowInfo.getCollectionInfo().getBookNumber());
         borrowListDTO.setImage(borrowInfo.getCollectionInfo().getBookInfo().getImage());
         borrowListDTO.setContent(borrowInfo.getCollectionInfo().getBookInfo().getContent());
         borrowListDTO.setTitle(borrowInfo.getCollectionInfo().getBookInfo().getTitle());
