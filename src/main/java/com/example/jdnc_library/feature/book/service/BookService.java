@@ -212,8 +212,6 @@ public class BookService {
         return notReturnedBorrows.stream()
                 .map(BorrowListDTO::of)
                 .collect(Collectors.toList());
-
-
     }
 
     /**
@@ -224,7 +222,7 @@ public class BookService {
     public void updateBook(long id, BookRequest bookRequest){
         BookInfo bookInfo = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, BookInfo.class));
 
-        bookInfo.update( bookRequest.getTitle(), bookRequest.getImage(), bookRequest.getContent(), bookRequest.getAuthor(), bookRequest.getPublisher(), bookRequest.getBookGroup());
+        bookInfo.update( bookRequest.getTitle(), bookRequest.getImage(), bookRequest.getContent(), bookRequest.getAuthor(), bookRequest.getPublisher(), BookGroup.valueOf(bookRequest.getBookGroup()));
     }
     // TODO : 책정보 추가 수정필요
     /**

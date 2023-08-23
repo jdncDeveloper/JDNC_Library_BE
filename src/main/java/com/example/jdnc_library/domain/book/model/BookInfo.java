@@ -1,5 +1,6 @@
 package com.example.jdnc_library.domain.book.model;
 
+import com.example.jdnc_library.converter.BookGroupConverter;
 import com.example.jdnc_library.domain.WriterEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,15 +33,15 @@ public class BookInfo extends WriterEntity {
     private String publisher;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = BookGroupConverter.class)
     private BookGroup bookGroup;
 
-    public void update(String title, String image, String content, String author, String publisher, String value){
+    public void update(String title, String image, String content, String author, String publisher, BookGroup bookGroup){
         this.title = title;
         this.image = image;
         this.content = content;
         this.author = author;
         this.publisher = publisher;
-        this.bookGroup = BookGroup.fromValue(value);
+        this.bookGroup = bookGroup;
     }
 }
