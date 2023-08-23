@@ -6,7 +6,7 @@ public enum BookGroup {
     GROUP_A("A"),
     GROUP_M("M"),
     GROUP_N("N"),
-    GROUP_a("a");
+    GROUP_A2("A2");
 
     private final String value;
 

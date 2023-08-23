@@ -3,6 +3,7 @@ package com.example.jdnc_library.domain.book.repository;
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,7 @@ public interface CollectionRepository extends JpaRepository<CollectionInfo, Inte
     List<CollectionInfo> findByBookInfo_id(Long bookInfoId);
 
     CollectionInfo findById(Long id);
+
+    @EntityGraph(attributePaths = {"bookInfo"})
+    List<CollectionInfo> findAll();
 }
