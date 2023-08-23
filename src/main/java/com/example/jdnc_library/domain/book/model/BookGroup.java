@@ -17,13 +17,4 @@ public enum BookGroup {
     public String getValue() {
         return value;
     }
-
-    public static BookGroup fromValue(String value) {
-        for (BookGroup group : values()) {
-            if (group.getValue().equals(value)) {
-                return group;
-            }
-        }
-        throw new IllegalArgumentException("Unknown BookGroup value: " + value);
-    }
 }
