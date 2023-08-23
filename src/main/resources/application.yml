@@ -24,3 +24,14 @@ spring:
 lms:
   login-url: https://lms.jdnc.or.kr/auth/login_check
   my-info-url: https://lms.jdnc.or.kr/mypage/myInfo
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: /health-check
+
+  endpoint:
+    health:
+      show-details: always

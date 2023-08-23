@@ -54,7 +54,8 @@ public class SecurityConfig {
                     new AntPathRequestMatcher("/favicon.ico"),
                     new AntPathRequestMatcher("/swagger-ui/**"),
                     new AntPathRequestMatcher("/v3/api-docs/**"),
-                    new AntPathRequestMatcher("/auth/refresh"));
+                    new AntPathRequestMatcher("/auth/refresh"),
+                    new AntPathRequestMatcher("/health-check"));
     }
 
     @Bean
