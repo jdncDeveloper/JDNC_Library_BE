@@ -4,6 +4,7 @@ import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +32,7 @@ public class BookController {
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateBook(
-            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "id") long id,
             @RequestBody BookRequest bookRequest){
         bookService.updateBook(id, bookRequest);
     }
@@ -44,9 +45,22 @@ public class BookController {
     @PostMapping("/addnumber")
     @ResponseStatus(HttpStatus.CREATED)
     public void createCollection(
-            @RequestParam(value = "bookNumber") Long bookNumber,
-            @RequestParam(value = "id") Long id){
+            @RequestParam(value = "bookNumber") long bookNumber,
+            @RequestParam(value = "id") long id){
         bookService.addBookNumber(bookNumber,id);
+    }
+
+    /**
+     * 관리자의 반납확인
+     * test용
+     * @param id
+     */
+    @GetMapping("/admincheck")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    public void adminCheck(
+            @RequestParam(value = "id") long id){
+        bookService.adminCheck(id);
     }
 
 

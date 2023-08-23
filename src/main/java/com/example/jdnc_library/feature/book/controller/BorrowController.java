@@ -37,7 +37,7 @@ public class BorrowController {
     @ResponseStatus(HttpStatus.OK)
     @Transactional
     public ResponseData<BorrowDetailDTO> qrBook(
-            @RequestParam(value = "bookNumber") Long bookNumber){
+            @RequestParam(value = "bookNumber") long bookNumber){
         return new ResponseData<>(bookService.qrBook(bookNumber));
     }
 
@@ -49,7 +49,7 @@ public class BorrowController {
     @GetMapping("/borrowbook")
     @ResponseStatus(HttpStatus.CREATED)
     public void borrowBook(
-            @RequestParam(value = "bookNumber") Long bookNumber){
+            @RequestParam(value = "bookNumber") long bookNumber){
         bookService.borrowBook(bookNumber);
     }
 
@@ -73,7 +73,7 @@ public class BorrowController {
     @GetMapping("/return")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void returnBook(
-            @RequestParam(value = "bookNumber") Long bookNumber){
+            @RequestParam(value = "bookNumber") long bookNumber){
         bookService.returnBook(bookNumber);
     }
 }
