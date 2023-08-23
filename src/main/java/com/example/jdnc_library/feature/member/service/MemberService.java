@@ -3,8 +3,8 @@ package com.example.jdnc_library.feature.member.service;
 import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
-import com.example.jdnc_library.feature.member.model.MemberDTO;
-import com.example.jdnc_library.feature.manager.model.StatusNResultDTO;
+import com.example.jdnc_library.exception.clienterror._400.BadRequestException;
+import com.example.jdnc_library.feature.member.DTO.MemberDTO;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +21,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public StatusNResultDTO getMemberList(Pageable pageable) {
-        StatusNResultDTO newReturn = new StatusNResultDTO();
-
+    public List<MemberDTO> getMemberList(Pageable pageable) {
         Page<Member> memberList = memberRepository.findAll(pageable);
+
+        List<MemberDTO> list = new ArrayList<>();
         if(!memberList.isEmpty()) {
-            List<MemberDTO> list = new ArrayList<>();
             for(Member member : memberList) {
                 MemberDTO nowMember = new MemberDTO();
                 nowMember.setMbNumber(member.getMbNumber());
@@ -36,15 +35,11 @@ public class MemberService {
 
                 list.add(nowMember);
             }
-
-            newReturn.setCheck(true);
-            newReturn.setList(list);
         } else {
-            newReturn.setCheck(false);
-            newReturn.setMessage("유저가 존재하지 않습니다");
+            throw new BadRequestException("유저가 존재하지 않습니다");
         }
 
-        return newReturn;
+        return list;
     }
 
     public MemberDTO getMember() {

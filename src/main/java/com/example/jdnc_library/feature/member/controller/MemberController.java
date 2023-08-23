@@ -1,10 +1,10 @@
 package com.example.jdnc_library.feature.member.controller;
 
 import com.example.jdnc_library.domain.member.model.Role;
-import com.example.jdnc_library.feature.manager.model.StatusNResultDTO;
-import com.example.jdnc_library.feature.member.model.MemberDTO;
+import com.example.jdnc_library.feature.member.DTO.MemberDTO;
 import com.example.jdnc_library.feature.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,9 +29,13 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "유저 정보 요청", description = "현재 로그인 되어있는 유저의 정보를 리턴")
     public ResponseEntity<MemberDTO> getMember() {
-        MemberDTO memberDTO = memberService.getMember();
+        try {
+            MemberDTO memberDTO = memberService.getMember();
 
-        return ResponseEntity.ok(memberDTO);
+            return ResponseEntity.ok(memberDTO);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     /**
@@ -41,9 +45,13 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Role 요청", description = "현재 로그인 되어있는 유저의 Role 리턴")
     public String getRole() {
-        Role role = memberService.getRole();
+        try {
+            Role role = memberService.getRole();
 
-        return role.toString();
+            return role.toString();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     /**
@@ -55,17 +63,13 @@ public class MemberController {
     @GetMapping("/list")
     //    @Secured("ROLE_MANAGER")
     @Operation(summary = "유저 리스트 요청", description = "모든 유저 리스트를 리턴")
-    public ResponseEntity<?> getMemberList(Pageable pageable) {
-        StatusNResultDTO result = memberService.getMemberList(pageable);
-        if(result.isCheck()) {
-            return ResponseEntity.ok(result.getList());
-        } else {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .header("Content-Type", "text/plain")
-                .body(result.getMessage());
+    public ResponseEntity<List<MemberDTO>> getMemberList(Pageable pageable) {
+        try {
+            List<MemberDTO> result = memberService.getMemberList(pageable);
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            throw e;
         }
     }
-
-
 }
