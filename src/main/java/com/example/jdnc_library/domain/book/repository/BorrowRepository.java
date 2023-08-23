@@ -13,7 +13,8 @@ import java.util.Optional;
 @Repository
 public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
 
-    Optional<BorrowInfo> findByCollectionInfo_BookNumber(Long bookNumber);
+    Optional<BorrowInfo> findByCollectionInfo_BookNumber(long bookNumber);
+    Optional<BorrowInfo> findByCollectionInfo_BookNumberAndReturnDateIsNull(long bookNumber);
     Page<BorrowInfo> findByReturnDateIsNull(Pageable pageable);
 
     Page<BorrowInfo> findAllByCreatedBy(Member member, Pageable pageable);

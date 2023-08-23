@@ -39,11 +39,29 @@ public class SearchController {
 
     @GetMapping("/detail")
     @ResponseStatus(HttpStatus.OK)
-    private ResponseData<BookDetailDTO> getBookDetail(
+    public ResponseData<BookDetailDTO> getBookDetail(
             @RequestParam(value = "id") long id){
         BookDetailDTO bookDetailDTO = bookService.getBookById(id);
 
         return new ResponseData<>(bookDetailDTO);
+    }
+
+    @GetMapping("/group")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<List<BookListDTO>> getBookGroupList(
+            @RequestParam(value = "group") String group,
+            @RequestParam(value = "title", required = false) String title,
+            @PageableDefault Pageable pageable){
+
+        List<BookListDTO> bookList;
+        if(title.isEmpty()){
+            bookList = bookService.searchBooksByGroup(group, pageable);
+        }
+        else {
+            bookList = bookService.searchBooksByGroupAndTitle(group, title, pageable);
+        }
+
+        return new ResponseData<>(bookList);
     }
 
 

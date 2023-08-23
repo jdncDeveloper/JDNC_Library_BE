@@ -9,6 +9,7 @@ import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
+import com.example.jdnc_library.exception.clienterror._400.ExistEntityException;
 import com.example.jdnc_library.feature.book.DTO.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -100,6 +101,35 @@ public class BookService {
     }
 
     /**
+     * 그룹으로 나눠서 검색
+     * @param group
+     * @return
+     */
+    public List<BookListDTO> searchBooksByGroup(String group, Pageable pageable){
+        Page<BookInfo> bookInfoList = bookRepository.findByBookGroup(group, pageable);
+
+        return bookInfoList.getContent()
+                .stream()
+                .map(bookInfo -> {
+                    boolean availableForBorrow = available(bookInfo.getId());
+                    return BookListDTO.of(bookInfo, availableForBorrow);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<BookListDTO> searchBooksByGroupAndTitle(String group, String title,Pageable pageable){
+        Page<BookInfo> bookInfoList = bookRepository.findByBookGroupAndTitleContaining(group, title, pageable);
+
+        return bookInfoList.getContent()
+                .stream()
+                .map(bookInfo -> {
+                    boolean availableForBorrow = available(bookInfo.getId());
+                    return BookListDTO.of(bookInfo, availableForBorrow);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 책의 QR을 찍었을 때 책 정보 리턴
      * @param bookNumber
      * @return
@@ -114,15 +144,21 @@ public class BookService {
      * 책을 빌릴 때 데이터베이스에 저장
      * @param bookNumber
      */
+    //TODO : 중복 대여 처리하기
     @Transactional
     public void borrowBook(long bookNumber){
+        Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findByCollectionInfo_BookNumberAndReturnDateIsNull(bookNumber);
+        if(borrowInfoOptional.isPresent()){
+            throw new ExistEntityException();
+        }
+        else {
+            CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
+                    .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
 
-        CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
-                .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
-
-        BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
-        borrowRepository.save(borrowInfo);
-        collectionInfo.updateAvailable(false);
+            BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
+            borrowRepository.save(borrowInfo);
+            collectionInfo.updateAvailable(false);
+        }
     }
 
     /**
@@ -221,7 +257,7 @@ public class BookService {
      * @exception CollectionInfo 존재할 경우
      */
 
-    public void addBookNumber(long bookNumber, Long id){
+    public void addBookNumber(long bookNumber, long id){
         Optional<CollectionInfo> existingCollection = collectionRepository.findByBookNumber(bookNumber);
 
         if(existingCollection.isPresent()){
@@ -239,9 +275,9 @@ public class BookService {
      * 반납 최종 확인(Admin)
      * @param id
      */
-    public void adminCheck(int id){
+    public void adminCheck(long id){
         try{
-            BorrowInfo borrowInfo = borrowRepository.getById(id);
+            BorrowInfo borrowInfo = borrowRepository.getById((int) id);
             borrowInfo.updateAdminCheck(true);
             borrowRepository.save(borrowInfo);
             CollectionInfo collectionInfo = collectionRepository.findById(borrowInfo.getCollectionInfo().getId());
