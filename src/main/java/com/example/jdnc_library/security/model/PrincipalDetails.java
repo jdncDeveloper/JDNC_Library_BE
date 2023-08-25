@@ -36,7 +36,7 @@ public class PrincipalDetails implements UserDetails { //이렇게 하면 Authen
 
     @Override
     public String getUsername() {
-        return member.getMbNumber();
+        return member.getUsername();
     }
 
     @Override

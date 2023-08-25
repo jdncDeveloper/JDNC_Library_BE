@@ -15,6 +15,6 @@ public class LmsTotalInfo {
     private String email;
 
     public static LmsTotalInfo of (Member member) {
-        return new LmsTotalInfo (member.getMbNumber(), member.getPassword(), member.getName(), member.getEmail());
+        return new LmsTotalInfo (member.getUsername(), member.getPassword(), member.getName(), member.getEmail());
     }
 }

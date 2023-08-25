@@ -4,7 +4,7 @@ import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import com.example.jdnc_library.exception.clienterror._401.NotLoginException;
-import com.example.jdnc_library.security.model.LmsLoginInfo;
+import com.example.jdnc_library.security.model.LoginInfo;
 import com.example.jdnc_library.security.model.LmsTotalInfo;
 import com.example.jdnc_library.security.model.LmsUserInfo;
 import jakarta.annotation.PostConstruct;
@@ -74,12 +74,12 @@ public class LmsCrawlerService {
      * @param lmsLoginInfo Lms 로그인 정보
      * @return 총체적인 Lms 정보
      */
-    public LmsTotalInfo getLmsLoginInfo(LmsLoginInfo lmsLoginInfo) {
+    public LmsTotalInfo getLmsLoginInfo(LoginInfo lmsLoginInfo) {
         HttpHeaders headers = loginAndGetCookie(lmsLoginInfo.getUsername(),
             lmsLoginInfo.getPassword());
         LmsUserInfo lmsUserInfo = getLmsUserInfo(headers);
 
-        Member member = memberRepository.findByMbNumber(lmsLoginInfo.getUsername());
+        Member member = memberRepository.findByUsername(lmsLoginInfo.getUsername());
         LmsTotalInfo lmsTotalInfo;
         if (member == null) {
             lmsTotalInfo = LmsTotalInfo.of(createNewMember(lmsLoginInfo, lmsUserInfo));
@@ -97,7 +97,7 @@ public class LmsCrawlerService {
      * @param lmsUserInfo  Lms 유저정보
      * @return 새로 생성된 멤버
      */
-    private Member createNewMember(LmsLoginInfo lmsLoginInfo, LmsUserInfo lmsUserInfo) {
+    private Member createNewMember(LoginInfo lmsLoginInfo, LmsUserInfo lmsUserInfo) {
         return memberRepository.save(new Member(
             lmsLoginInfo.getUsername(),
             passwordEncoder.encode(lmsLoginInfo.getPassword()),
@@ -117,7 +117,7 @@ public class LmsCrawlerService {
      * @return 업데이트 된 멤버
      */
 
-    private Member validateMember(Member member, LmsLoginInfo lmsLoginInfo,
+    private Member validateMember(Member member, LoginInfo lmsLoginInfo,
         LmsUserInfo lmsUserInfo) {
         boolean flag = false;
         if (member.getPassword() == null || !passwordEncoder.matches(lmsLoginInfo.getPassword(),

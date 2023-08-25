@@ -1,6 +1,6 @@
 package com.example.jdnc_library.security.service;
 
-import com.example.jdnc_library.security.model.LmsLoginInfo;
+import com.example.jdnc_library.security.model.LoginInfo;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -30,7 +30,7 @@ public class LmsService {
         setSSL();
     }
 
-    public String getNameWithLogin (LmsLoginInfo lmsLoginInfo)
+    public String getNameWithLogin (LoginInfo lmsLoginInfo)
         throws IOException {
         //암호화 해제
         decryptedInfo(lmsLoginInfo);
@@ -72,7 +72,7 @@ public class LmsService {
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
     }
 
-    private void decryptedInfo (LmsLoginInfo lmsLoginInfo) {
+    private void decryptedInfo (LoginInfo lmsLoginInfo) {
 
     }
 

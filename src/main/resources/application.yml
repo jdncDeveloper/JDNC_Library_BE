@@ -25,6 +25,11 @@ lms:
   login-url: https://lms.jdnc.or.kr/auth/login_check
   my-info-url: https://lms.jdnc.or.kr/mypage/myInfo
 
+init:
+  admin:
+    username: admin
+    password: test1234
+
 management:
   endpoints:
     web:

@@ -28,7 +28,7 @@ public class MemberService {
         if(!memberList.isEmpty()) {
             for(Member member : memberList) {
                 MemberDTO nowMember = new MemberDTO();
-                nowMember.setMbNumber(member.getMbNumber());
+                nowMember.setMbNumber(member.getUsername());
                 nowMember.setName(member.getName());
                 nowMember.setEmail(member.getEmail());
                 nowMember.setRole(member.getRole());
@@ -50,7 +50,7 @@ public class MemberService {
         Member member = principalDetails.getMember();
 
         memberDTO.setName(member.getName());
-        memberDTO.setMbNumber(member.getMbNumber());
+        memberDTO.setMbNumber(member.getUsername());
         memberDTO.setEmail(member.getEmail());
         memberDTO.setRole(member.getRole());
 
