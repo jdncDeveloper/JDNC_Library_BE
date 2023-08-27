@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,4 +27,7 @@ public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
     Page<BorrowInfo> findByReturnDateBetween(LocalDate startOfMonth, LocalDate endOfMonth, Pageable pageable);
 
     List<BorrowInfo> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    @EntityGraph(attributePaths = {"createdBy"})
+    List<BorrowInfo> findAllByAdminCheckIsFalse();
 }
