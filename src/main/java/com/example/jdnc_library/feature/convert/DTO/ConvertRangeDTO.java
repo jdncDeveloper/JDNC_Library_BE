@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ConvertRangeDTO {
-    LocalDate start;
-    LocalDate end;
+    private LocalDate start;
+    private LocalDate end;
 }
