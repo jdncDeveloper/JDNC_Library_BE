@@ -3,6 +3,7 @@ package com.example.jdnc_library.util;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.annotation.PostConstruct;
@@ -52,7 +53,8 @@ public abstract class Querydsl4RepositorySupport {
         this.entityManager = entityManager;
         this.querydsl = new Querydsl(entityManager, new
                 PathBuilder<>(path.getType(), path.getMetadata()));
-        this.queryFactory = new JPAQueryFactory(entityManager);
+        //JPQLTemplate을 Default로 둬야 transform에서 오류가 나지않음
+        this.queryFactory = new JPAQueryFactory(JPQLTemplates.DEFAULT, entityManager);
     }
 
     @PostConstruct
@@ -83,9 +85,7 @@ public abstract class Querydsl4RepositorySupport {
     }
 
     protected <T> Page<T> applyPagination(Pageable pageable,
-                                          Function<JPAQueryFactory, JPAQuery> contentQuery) {
-
-        JPAQuery jpaQuery = contentQuery.apply(getQueryFactory());
+                                          JPAQuery jpaQuery) {
 
         List<T> content = getQuerydsl().applyPagination(pageable,
                 jpaQuery).fetch();
