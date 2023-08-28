@@ -29,7 +29,8 @@ public class BookRequest {
                 content,
                 author,
                 publisher,
-                BookGroup.valueOf(bookGroup)
+                BookGroup.valueOf(bookGroup),
+            null
         );
     }
 }

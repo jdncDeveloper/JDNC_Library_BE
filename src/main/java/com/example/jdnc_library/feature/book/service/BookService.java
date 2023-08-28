@@ -11,6 +11,7 @@ import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
 import com.example.jdnc_library.exception.clienterror._400.ExistEntityException;
 import com.example.jdnc_library.feature.book.DTO.*;
+import com.example.jdnc_library.feature.book.repository.BookInfoQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final CollectionRepository collectionRepository;
     private final BorrowRepository borrowRepository;
+    private final BookInfoQueryRepository bookInfoQueryRepository;
 
     /**
      * 책 1권의 정보를 리턴
@@ -51,7 +53,6 @@ public class BookService {
      * @param id
      * @return
      */
-
     public boolean available(long id){
         List<CollectionInfo> collectionInfo = collectionRepository.findByBookInfo_id(id);
 
@@ -72,16 +73,14 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookListDTO> searchBooksByTitle(String title, Pageable pageable){
-        Page<BookInfo> bookInfoList = bookRepository.findAllByTitleContaining(title, pageable);
-
-        return bookInfoList.getContent()
-                .stream()
-                .map(bookInfo -> {
-                    boolean availableForBorrow = available(bookInfo.getId());
-                    return BookListDTO.of(bookInfo, availableForBorrow);
-                })
-                .collect(Collectors.toList());
+    /**
+     * @param title
+     * @param pageable
+     * @return
+     */
+    //TODO : 이부분 컨트롤러 까지 수정 - by KBJ
+    public List<BookListDTO> getBookListDTOs(String title, Pageable pageable){
+        return bookInfoQueryRepository.getBookListDTOs(title, pageable).getContent();
     }
 
     /**

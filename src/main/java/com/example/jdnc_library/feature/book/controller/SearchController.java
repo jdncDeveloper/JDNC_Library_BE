@@ -26,13 +26,7 @@ public class SearchController {
             @PageableDefault Pageable pageable,
             @RequestParam(value = "title", required = false) String title) {
 
-        List<BookListDTO> bookList;
-        if (StringUtils.isEmpty(title)) {
-            bookList = bookService.searchAllBooks(pageable);
-        } else {
-            bookList = bookService.searchBooksByTitle(title, pageable);
-        }
-
+        List <BookListDTO> bookList = bookService.getBookListDTOs(title, pageable);
         return new ResponseData<>(bookList);
 
     }
