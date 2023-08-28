@@ -16,6 +16,7 @@ import java.util.Optional;
 @Repository
 public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
 
+    Optional<BorrowInfo> findById(long id);
     Optional<BorrowInfo> findByCollectionInfo_BookNumber(long bookNumber);
     Optional<BorrowInfo> findByCollectionInfo_BookNumberAndReturnDateIsNull(long bookNumber);
     Page<BorrowInfo> findByReturnDateIsNull(Pageable pageable);
@@ -24,7 +25,7 @@ public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
 
     Page<BorrowInfo> findAllByCreatedByAndReturnDateIsNull(Member member, Pageable pageable);
 
-    Page<BorrowInfo> findByReturnDateBetween(LocalDate startOfMonth, LocalDate endOfMonth, Pageable pageable);
+    Page<BorrowInfo> findByCreatedAtBetween(LocalDate startOfMonth, LocalDate endOfMonth, Pageable pageable);
 
     List<BorrowInfo> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 

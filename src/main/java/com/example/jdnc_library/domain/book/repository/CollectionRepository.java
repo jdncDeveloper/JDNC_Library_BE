@@ -19,7 +19,7 @@ public interface CollectionRepository extends JpaRepository<CollectionInfo, Inte
 
     List<CollectionInfo> findByBookInfo_id(Long bookInfoId);
 
-    CollectionInfo findById(Long id);
+    Optional<CollectionInfo> findById(Long id);
 
     @EntityGraph(attributePaths = {"bookInfo"})
     List<CollectionInfo> findAll();

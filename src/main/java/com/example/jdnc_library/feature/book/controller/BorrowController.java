@@ -78,7 +78,8 @@ public class BorrowController {
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void returnBook(
-            @RequestParam(value = "bookNumber") @Positive long bookNumber){
-        borrowService.returnBook(bookNumber);
+            @RequestParam(value = "bookNumber") @Positive long bookNumber,
+            @RequestParam(value = "state") @Positive int state){
+        borrowService.returnBook(bookNumber, state);
     }
 }

@@ -27,6 +27,9 @@ public class BorrowInfo extends WriterEntity {
     @Column
     private LocalDateTime returnDate;
 
+    @Column
+    private int state;
+
     public BorrowInfo(CollectionInfo collectionInfo){
         this.collectionInfo = collectionInfo;
         this.adminCheck = false;
@@ -34,8 +37,9 @@ public class BorrowInfo extends WriterEntity {
     }
 
 
-    public void returnBook(LocalDateTime returnDate){
+    public void returnBook(LocalDateTime returnDate, int state){
         this.returnDate = returnDate;
+        this.state = state;
     }
 
     public void updateAdminCheck(boolean newAdminCheck) {

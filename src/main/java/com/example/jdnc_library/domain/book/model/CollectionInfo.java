@@ -40,4 +40,9 @@ public class CollectionInfo extends WriterEntity {
     public void updateAvailable(boolean availableChange){
         this.available = availableChange;
     }
+
+    public void lostBook(boolean lost){
+        this.lost = lost;
+        this.available = !lost;
+    }
 }
