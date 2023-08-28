@@ -31,13 +31,14 @@ public class BookInfoQueryRepository extends Querydsl4RepositorySupport {
                 bookInfo.image,
                 bookInfo.author,
                 bookInfo.publisher,
-                select(collectionInfo.id.count().gt(0L))
-                    .from(collectionInfo)
-                    .where(collectionInfo.bookInfo.eq(bookInfo)
-                        .and(collectionInfo.available.eq(true)))
+                collectionInfo.id.count().gt(0L)
             ))
             .from(bookInfo)
-            .where(Querydsl4ExpressionUtil.contains(bookInfo.title, title));
+            .leftJoin(collectionInfo).on(bookInfo.id.eq(collectionInfo.bookInfo.id)
+                .and(collectionInfo.available.isTrue())
+            )
+            .where(Querydsl4ExpressionUtil.contains(bookInfo.title, title))
+            .groupBy(collectionInfo.bookInfo.id);
 
         return applyPagination(pageable, jpaQuery);
     }
