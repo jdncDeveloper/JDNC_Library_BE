@@ -8,11 +8,13 @@ import com.example.jdnc_library.domain.book.repository.BookRepository;
 import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
+import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,11 +35,11 @@ public class BookService {
      * @param month
      * @return
      */
-    public List<BorrowListDTO> searchBooksReturnedInMonth(int year, int month, Pageable pageable) {
+    public List<BorrowListDTO> searchBooksBorrowedInMonth(int year, int month, Pageable pageable) {
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-        List<BorrowInfo> returnedInMonth = borrowRepository.findByReturnDateBetween(startOfMonth, endOfMonth, pageable).getContent();
+        List<BorrowInfo> returnedInMonth = borrowRepository.findByCreatedAtBetween(startOfMonth, endOfMonth, pageable).getContent();
 
         return returnedInMonth.stream()
                 .map(BorrowListDTO::of)
@@ -112,19 +114,64 @@ public class BookService {
     }
 
     /**
-     * 반납 최종 확인(Admin)
+     * 반납 최종 확인
+     * @param adminRequest
+     */
+    public void adminCheck(AdminRequest adminRequest){
+        List<Long> ids = adminRequest.getIds();
+
+        for(Long id : ids){
+            updateAdminCheck(id);
+        }
+    }
+
+    /**
+     * 반납 확인 트랜잭션처리
      * @param id
      */
-    public void adminCheck(long id){
-        try{
-            BorrowInfo borrowInfo = borrowRepository.getById((int) id);
+    @Transactional
+    public void updateAdminCheck(Long id){
+        Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findById(id);
+
+        if (borrowInfoOptional.isPresent()) {
+            BorrowInfo borrowInfo = borrowInfoOptional.get();
             borrowInfo.updateAdminCheck(true);
             borrowRepository.save(borrowInfo);
-            CollectionInfo collectionInfo = collectionRepository.findById(borrowInfo.getCollectionInfo().getId());
+
+            CollectionInfo collectionInfo = borrowInfo.getCollectionInfo();
             collectionInfo.updateAvailable(true);
             collectionRepository.save(collectionInfo);
-        } catch (EntityNotFoundException e){
-            throw new EntityNotFoundException();
+        } else {
+            throw new EntityNotFoundException(id, BookInfo.class);
+        }
+    }
+
+    /**
+     * 책 소실 처리
+     * @param adminRequest
+     */
+    public void lostBook(AdminRequest adminRequest){
+        List<Long> ids = adminRequest.getIds();
+        for(Long id : ids) {
+            updateLostBook(id);
+        }
+
+    }
+
+    /**
+     * 소실 트랜잭션 처리
+     * @param id
+     */
+    @Transactional
+    public void updateLostBook(Long id) {
+        Optional<CollectionInfo> collectionInfoOptional = collectionRepository.findById(id);
+
+        if (collectionInfoOptional.isPresent()) {
+            CollectionInfo collectionInfo = collectionInfoOptional.get();
+            collectionInfo.lostBook(!collectionInfo.isLost());
+            collectionRepository.save(collectionInfo);
+        } else {
+            throw new EntityNotFoundException(id, CollectionInfo.class);
         }
     }
 }

@@ -1,16 +1,23 @@
 package com.example.jdnc_library.feature.book.controller;
 
+import com.example.jdnc_library.domain.ResponseData;
+import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
+import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@Secured("ROLE_ADMIN")
+@Secured({"ROLE_ADMIN","ROLE_BOOKKEEPER"})
 @RequiredArgsConstructor
 @RequestMapping("/book")
 public class BookController {
@@ -56,14 +63,56 @@ public class BookController {
     /**
      * 관리자의 반납확인
      * test용
-     * @param id
+     * @param adminRequest
      */
     @GetMapping("/admincheck")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void adminCheck(
-            @RequestParam(value = "id") @Positive long id){
-        bookService.adminCheck(id);
+            @RequestBody AdminRequest adminRequest){
+        bookService.adminCheck(adminRequest);
+    }
+
+    /**
+     * 소실 처리
+     * @param adminRequest
+     */
+    @PutMapping("/lost")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    public void lostBook(
+            @RequestBody AdminRequest adminRequest){
+        bookService.lostBook(adminRequest);
+    }
+
+    /**
+     * 월간 대출 기록
+     * @param year
+     * @param month
+     * @param pageable
+     * @return
+     */
+    @GetMapping("/monthly")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional
+    public ResponseData<List<BorrowListDTO>> monthlyBorrow(
+            @RequestParam(value = "year") @Positive int year,
+            @RequestParam(value = "month") @Positive int month,
+            @PageableDefault Pageable pageable){
+        return new ResponseData<>(bookService.searchBooksBorrowedInMonth(year, month, pageable));
+    }
+
+    /**
+     * 미반납인 책 리스트
+     * @param pageable
+     * @return
+     */
+    @GetMapping("/overdue")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional
+    public ResponseData<List<BorrowListDTO>> overdue(
+            @PageableDefault Pageable pageable){
+        return new ResponseData<>(bookService.searchNotReturnBooks(pageable));
     }
 
 

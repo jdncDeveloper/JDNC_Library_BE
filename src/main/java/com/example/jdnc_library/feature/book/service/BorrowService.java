@@ -75,10 +75,10 @@ public class BorrowService {
      * 책 한권을 반납하면 데이터베이스에 저장
      * @param bookNumber
      */
-    public void returnBook(long bookNumber) {
+    public void returnBook(long bookNumber, int state) {
         Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findByCollectionInfo_BookNumberAndReturnDateIsNull(bookNumber);
         BorrowInfo borrowInfo = borrowInfoOptional.get();
-        borrowInfo.returnBook(LocalDateTime.now());
+        borrowInfo.returnBook(LocalDateTime.now(), state);
         borrowRepository.save(borrowInfo);
     }
 }
