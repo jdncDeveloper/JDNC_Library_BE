@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Table(indexes = @Index(name = "mb_number_index", columnList = "mbNumber"))
+@Table(indexes = @Index(name = "mb_number_index", columnList = "username"))
 public class Member {
 
     @Id
