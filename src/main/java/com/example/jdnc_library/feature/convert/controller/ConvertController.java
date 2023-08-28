@@ -40,7 +40,7 @@ public class ConvertController {
             ByteArrayResource resource = convertToExelFileService.getResource(outputStream);
 
             //파일 이름 생성
-            String fileName = convertToExelFileService.makeFileName();
+            String fileName = convertToExelFileService.makeFileName(start, end);
 
             // 파일 다운로드 응답
             HttpHeaders headers = new HttpHeaders();

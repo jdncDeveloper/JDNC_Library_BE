@@ -41,8 +41,12 @@ public class ConvertToExelFileService {
             List<CollectionInfo> collections = collectionRepository.findAll();
 
             //도서 리스트 입력
-            int[] rowCount = new int[5];
+            int[] rowCount = new int[6];
             int index = 0;
+
+            Sheet lostSheet = workbook.getSheetAt(7);
+            Row lostRow = lostSheet.getRow(4 + rowCount[5]);
+
             for (int i = 0; i < collections.size(); i++) {
                 BookGroup bookGroup = collections.get(i).getBookInfo().getBookGroup();
                 Sheet nowSheet;
@@ -78,9 +82,12 @@ public class ConvertToExelFileService {
                 Cell cellBookTitle = row.getCell(1);
                 cellBookNum.setCellValue(collections.get(i).getBookNumber());
                 cellBookTitle.setCellValue(collections.get(i).getBookInfo().getTitle());
-                if (collections.get(i).isLost()) {
-                    Cell cellExtra = row.getCell(5);
-                    cellExtra.setCellValue("소실");
+                if (collections.get(i).isLost()) { //소실된 책 처리
+                    rowCount[5]++;
+                    cellBookNum = lostRow.getCell(0);
+                    cellBookTitle = lostRow.getCell(1);
+                    cellBookNum.setCellValue(collections.get(i).getBookNumber());
+                    cellBookTitle.setCellValue(collections.get(i).getBookInfo().getTitle());
                 }
             }
 
@@ -91,14 +98,44 @@ public class ConvertToExelFileService {
                 endDate);
 
             //대여 현황 입력
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet current = workbook.getSheetAt(0);
+            Sheet record = workbook.getSheetAt(6);
+            Row currentRow;
+            Row recordRow;
+            int currentIndex = 4;
+            int recordIndex = 4;
+            Cell cell1st;
+            Cell cell2nd;
+            Cell cell3rd;
+            Cell cell4th;
+            Cell cell5th;
             for (int i = 0; i < borrowInfoList.size(); i++) {
-                Row row = sheet.getRow(4 + i);
-                Cell cell1st = row.getCell(0);
-                Cell cell2nd = row.getCell(1);
-                Cell cell3rd = row.getCell(2);
-                Cell cell4th = row.getCell(3);
-                Cell cell5th = row.getCell(4);
+                if(borrowInfoList.get(i).isAdminCheck()) { // 반납 최종 확인 된 경우
+                    recordRow = record.getRow(recordIndex);
+
+                    cell1st = recordRow.getCell(0);
+                    cell2nd = recordRow.getCell(1);
+                    cell3rd = recordRow.getCell(2);
+                    cell4th = recordRow.getCell(3);
+                    cell5th = recordRow.getCell(4);
+                    Cell cell6th = recordRow.getCell(5);
+                    Cell cell7th = recordRow.getCell(6);
+
+                    cell6th.setCellValue(borrowInfoList.get(i).getReturnDate());
+
+                    recordIndex++;
+                } else { //아직 반납 최정 확인아 안된경우
+                    currentRow = current.getRow(currentIndex);
+
+                    cell1st = currentRow.getCell(0);
+                    cell2nd = currentRow.getCell(1);
+                    cell3rd = currentRow.getCell(2);
+                    cell4th = currentRow.getCell(3);
+                    cell5th = currentRow.getCell(4);
+
+                    currentIndex++;
+                }
+
                 cell1st.setCellValue(borrowInfoList.get(i).getCollectionInfo().getBookNumber());
                 cell2nd.setCellValue(
                     borrowInfoList.get(i).getCollectionInfo().getBookInfo().getTitle());
@@ -132,11 +169,10 @@ public class ConvertToExelFileService {
         }
     }
 
-    public String makeFileName() {
+    public String makeFileName(LocalDate start, LocalDate end) {
         //파일이름 생성
         String fileName = "";
-        LocalDate localDate = LocalDate.now();
-        fileName = localDate + "_TAM-NA-LIB.xlsm";
+        fileName = start + " ~ " + end + "_LIB.xlsm";
         System.out.println(fileName);
 
         return fileName;
