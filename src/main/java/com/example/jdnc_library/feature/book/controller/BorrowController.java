@@ -4,7 +4,9 @@ import com.example.jdnc_library.domain.ResponseData;
 import com.example.jdnc_library.feature.book.DTO.BorrowDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
+import com.example.jdnc_library.feature.book.service.BorrowService;
 import com.example.jdnc_library.security.model.PrincipalDetails;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -25,7 +27,7 @@ public class BorrowController {
      */
     //TODO: @transactional 처리하기
 
-    private final BookService bookService;
+    private final BorrowService borrowService;
 
     /**
      * QR코드를 이용한 도서 대출 페이지 요청
@@ -37,8 +39,8 @@ public class BorrowController {
     @ResponseStatus(HttpStatus.OK)
     @Transactional
     public ResponseData<BorrowDetailDTO> qrBook(
-            @RequestParam(value = "bookNumber") long bookNumber){
-        return new ResponseData<>(bookService.qrBook(bookNumber));
+            @RequestParam(value = "bookNumber") @Positive long bookNumber){
+        return new ResponseData<>(borrowService.qrBook(bookNumber));
     }
 
     /**
@@ -47,10 +49,11 @@ public class BorrowController {
      *
      */
     @GetMapping("/borrowbook")
+    @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
     public void borrowBook(
-            @RequestParam(value = "bookNumber") long bookNumber){
-        bookService.borrowBook(bookNumber);
+            @RequestParam(value = "bookNumber") @Positive long bookNumber){
+        borrowService.borrowBook(bookNumber);
     }
 
     /**
@@ -58,12 +61,13 @@ public class BorrowController {
      * @return List<BorrowDTO>
      */
     @GetMapping("/returnlist")
+    @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
     @Transactional
     public ResponseData<List<BorrowListDTO>> returnList(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault Pageable pageable){
-        return new ResponseData<>(bookService.returnBookList(principalDetails.getMember(), pageable));
+        return new ResponseData<>(borrowService.returnBookList(principalDetails.getMember(), pageable));
     }
 
     /**
@@ -71,9 +75,10 @@ public class BorrowController {
      * @param bookNumber
      */
     @GetMapping("/return")
+    @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void returnBook(
-            @RequestParam(value = "bookNumber") long bookNumber){
-        bookService.returnBook(bookNumber);
+            @RequestParam(value = "bookNumber") @Positive long bookNumber){
+        borrowService.returnBook(bookNumber);
     }
 }
