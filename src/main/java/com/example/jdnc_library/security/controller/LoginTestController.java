@@ -3,7 +3,7 @@ package com.example.jdnc_library.security.controller;
 import com.example.jdnc_library.security.model.LmsTotalInfo;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import com.example.jdnc_library.security.service.LmsCrawlerService;
-import com.example.jdnc_library.security.model.LmsLoginInfo;
+import com.example.jdnc_library.security.model.LoginInfo;
 import com.example.jdnc_library.security.service.LmsService;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -27,13 +27,13 @@ public class LoginTestController {
     private final LmsCrawlerService lmsCrawlerService;
 
     @PostMapping
-    public String getName (@RequestBody LmsLoginInfo lmsLoginInfo)
+    public String getName (@RequestBody LoginInfo lmsLoginInfo)
         throws IOException, NoSuchAlgorithmException, KeyManagementException {
         return lmsService.getNameWithLogin(lmsLoginInfo);
     }
 
     @PostMapping("2")
-    public LmsTotalInfo getUserInfo (@RequestBody LmsLoginInfo lmsLoginInfo)
+    public LmsTotalInfo getUserInfo (@RequestBody LoginInfo lmsLoginInfo)
         throws IOException, NoSuchAlgorithmException, KeyManagementException {
         return lmsCrawlerService.getLmsLoginInfo(lmsLoginInfo);
     }

@@ -23,7 +23,7 @@ public class ManagerService {
         if(!bookKeepers.isEmpty()) {
             for(Member bookKeeper : bookKeepers) {
                 MemberDTO bookKeeperDTO = new MemberDTO();
-                bookKeeperDTO.setMbNumber(bookKeeper.getMbNumber());
+                bookKeeperDTO.setMbNumber(bookKeeper.getUsername());
                 bookKeeperDTO.setName(bookKeeper.getName());
                 bookKeeperDTO.setEmail(bookKeeper.getEmail());
                 bookKeeperDTO.setRole(bookKeeper.getRole());
@@ -38,7 +38,7 @@ public class ManagerService {
     }
 
     public String setBookKeeper(String mbNumber) {
-        Member newBookKeeper = memberRepository.findByMbNumber(mbNumber);
+        Member newBookKeeper = memberRepository.findByUsername(mbNumber);
         if(newBookKeeper == null) {
             throw new BadRequestException("해당 유저가 없습니다");
         }
@@ -53,7 +53,7 @@ public class ManagerService {
     }
 
     public String deleteBookKeeper(String mbNumber) {
-        Member newBookKeeper = memberRepository.findByMbNumber(mbNumber);
+        Member newBookKeeper = memberRepository.findByUsername(mbNumber);
         if(newBookKeeper == null) {
             throw new BadRequestException("해당 유저가 없습니다");
         }

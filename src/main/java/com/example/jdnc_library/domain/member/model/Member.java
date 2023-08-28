@@ -25,7 +25,7 @@ public class Member {
 
     //A:년도/B:1반기or2반기/C:기수/:4번호
     //AA/B/CC/DDD
-    private String mbNumber;
+    private String username;
 
     private String password;
 
@@ -38,8 +38,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Member (String mbNumber, String password, String name, String email, String refresh, Role role) {
-        this.mbNumber = mbNumber;
+    public Member (String username, String password, String name, String email, String refresh, Role role) {
+        this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
@@ -52,9 +52,9 @@ public class Member {
     }
 
     public int getPeriod() {
-        if (mbNumber == null) return 0;
-        if (mbNumber.length() != 8) return 0;
-        return Integer.parseInt(mbNumber.substring(3, 5));
+        if (username == null) return 0;
+        if (username.length() != 8) return 0;
+        return Integer.parseInt(username.substring(3, 5));
     }
 
     public void update(String name, String encodedPassword, String email) {

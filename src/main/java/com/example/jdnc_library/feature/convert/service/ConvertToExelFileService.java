@@ -139,7 +139,7 @@ public class ConvertToExelFileService {
                 cell1st.setCellValue(borrowInfoList.get(i).getCollectionInfo().getBookNumber());
                 cell2nd.setCellValue(
                     borrowInfoList.get(i).getCollectionInfo().getBookInfo().getTitle());
-                cell3rd.setCellValue(borrowInfoList.get(i).getCreatedBy().getMbNumber());
+                cell3rd.setCellValue(borrowInfoList.get(i).getCreatedBy().getUsername());
                 cell4th.setCellValue(borrowInfoList.get(i).getCreatedBy().getName());
                 cell5th.setCellValue(borrowInfoList.get(i).getCreatedAt());
             }
