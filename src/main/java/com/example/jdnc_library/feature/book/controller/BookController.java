@@ -2,12 +2,15 @@ package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.service.BookService;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Secured("ROLE_ADMIN")
 @RequiredArgsConstructor
 @RequestMapping("/book")
 public class BookController {
@@ -18,7 +21,7 @@ public class BookController {
      * 책 정보 추가
      * @param bookRequest
      */
-    @PostMapping("/create")
+    @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public void createBook(@RequestBody BookRequest bookRequest){
         bookService.saveBook(bookRequest);
@@ -29,10 +32,10 @@ public class BookController {
      * @param id
      * @param bookRequest
      */
-    @PostMapping("/update")
+    @PutMapping("")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateBook(
-            @RequestParam(value = "id") long id,
+            @RequestParam(value = "id") @Positive long id,
             @RequestBody BookRequest bookRequest){
         bookService.updateBook(id, bookRequest);
     }
@@ -45,8 +48,8 @@ public class BookController {
     @PostMapping("/addnumber")
     @ResponseStatus(HttpStatus.CREATED)
     public void createCollection(
-            @RequestParam(value = "bookNumber") long bookNumber,
-            @RequestParam(value = "id") long id){
+            @RequestParam(value = "bookNumber") @Positive long bookNumber,
+            @RequestParam(value = "id") @Positive long id){
         bookService.addBookNumber(bookNumber,id);
     }
 
@@ -59,7 +62,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void adminCheck(
-            @RequestParam(value = "id") long id){
+            @RequestParam(value = "id") @Positive long id){
         bookService.adminCheck(id);
     }
 

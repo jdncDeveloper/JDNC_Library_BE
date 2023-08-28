@@ -4,7 +4,9 @@ import com.example.jdnc_library.domain.ResponseData;
 import com.example.jdnc_library.feature.book.DTO.BookDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BookListDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
+import com.example.jdnc_library.feature.book.service.SearchService;
 import io.micrometer.common.util.StringUtils;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,7 +20,7 @@ import java.util.List;
 @RequestMapping("/search")
 public class SearchController {
 
-    private final BookService bookService;
+    private final SearchService searchService;
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
@@ -26,7 +28,7 @@ public class SearchController {
             @PageableDefault Pageable pageable,
             @RequestParam(value = "title", required = false) String title) {
 
-        List <BookListDTO> bookList = bookService.getBookListDTOs(title, pageable);
+        List <BookListDTO> bookList = searchService.getBookListDTOs(title, pageable);
         return new ResponseData<>(bookList);
 
     }
@@ -34,8 +36,8 @@ public class SearchController {
     @GetMapping("/detail")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<BookDetailDTO> getBookDetail(
-            @RequestParam(value = "id") long id){
-        BookDetailDTO bookDetailDTO = bookService.getBookById(id);
+            @RequestParam(value = "id") @Positive long id){
+        BookDetailDTO bookDetailDTO = searchService.getBookById(id);
 
         return new ResponseData<>(bookDetailDTO);
     }
@@ -49,10 +51,10 @@ public class SearchController {
 
         List<BookListDTO> bookList;
         if(title.isEmpty()){
-            bookList = bookService.searchBooksByGroup(group, pageable);
+            bookList = searchService.searchBooksByGroup(group, pageable);
         }
         else {
-            bookList = bookService.searchBooksByGroupAndTitle(group, title, pageable);
+            bookList = searchService.searchBooksByGroupAndTitle(group, title, pageable);
         }
 
         return new ResponseData<>(bookList);
