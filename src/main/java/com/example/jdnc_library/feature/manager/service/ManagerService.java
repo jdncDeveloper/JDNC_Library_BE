@@ -42,7 +42,7 @@ public class ManagerService {
         if(newBookKeeper == null) {
             throw new BadRequestException("해당 유저가 없습니다");
         }
-        if(!newBookKeeper.getRole().equals("ROLE_BOOKKEEPER")) {
+        if(!newBookKeeper.getRole().toString().equals("ROLE_BOOKKEEPER")) {
             newBookKeeper.updateROLE(Role.valueOf("ROLE_BOOKKEEPER"));
             memberRepository.save(newBookKeeper);
         } else {
@@ -57,7 +57,8 @@ public class ManagerService {
         if(newBookKeeper == null) {
             throw new BadRequestException("해당 유저가 없습니다");
         }
-        if(newBookKeeper.getRole().equals("ROLE_BOOKKEEPER")) {
+        System.out.println(newBookKeeper.getRole());
+        if(newBookKeeper.getRole().toString().equals("ROLE_BOOKKEEPER")) {
             newBookKeeper.updateROLE(Role.valueOf("ROLE_USER"));
             memberRepository.save(newBookKeeper);
         } else {
