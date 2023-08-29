@@ -64,11 +64,12 @@ public class MemberController {
     @GetMapping("/list")
     //    @Secured("ROLE_MANAGER")
     @Operation(summary = "유저 리스트 요청", description = "모든 유저 리스트를 리턴")
-    public ResponseEntity<List<MemberDTO>> getMemberList(Pageable pageable) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<MemberDTO> getMemberList(Pageable pageable) {
         try {
             List<MemberDTO> result = memberService.getMemberList(pageable);
 
-            return ResponseEntity.ok(result);
+            return result;
         } catch (Exception e) {
             throw e;
         }
@@ -77,6 +78,7 @@ public class MemberController {
     @GetMapping("/user")
 //    @Secured("ROLE_MANAGER")
     @Operation(summary = "검색한 유저 정보 리턴", description = "검색한 이름과 일치하는 유저 정보를 리턴합니다")
+    @ResponseStatus(HttpStatus.OK)
     public List<MemberDTO> getSearchUserInfo(@RequestParam String name) {
         List<MemberDTO> searchUserInfo = memberService.getSearchUser(name);
 
