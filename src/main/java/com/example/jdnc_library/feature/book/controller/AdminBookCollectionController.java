@@ -42,7 +42,7 @@ public class AdminBookCollectionController {
      * @param adminRequest
      */
     //TODO: 프론트엔드 알림, 멘토링 질문
-    @PutMapping("/returnCheck")
+    @PutMapping("/return")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void adminCheck(
         @RequestBody AdminRequest adminRequest){

@@ -64,6 +64,7 @@ public class BorrowService {
      * @param member
      * @return
      */
+    @Transactional
     public List<BorrowListDTO> returnBookList(Member member, Pageable pageable){
         List<BorrowInfo> borrowInfoList = borrowRepository.findAllByCreatedByAndReturnDateIsNull(member, pageable).getContent();
 
