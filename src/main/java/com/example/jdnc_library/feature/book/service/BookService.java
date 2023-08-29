@@ -11,6 +11,10 @@ import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundExcepti
 import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,6 +39,7 @@ public class BookService {
      * @param month
      * @return
      */
+    @Transactional
     public List<BorrowListDTO> searchBooksBorrowedInMonth(int year, int month, Pageable pageable) {
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
@@ -50,6 +55,7 @@ public class BookService {
      * 아직 미반납인 책 리스트를 리턴(Admin)
      * @return List<BorrowDTO>
      */
+    @Transactional
     public List<BorrowListDTO> searchNotReturnBooks(Pageable pageable) {
         List<BorrowInfo> notReturnedBorrows = borrowRepository.findByReturnDateIsNull(pageable).getContent();
 
@@ -98,7 +104,7 @@ public class BookService {
      * @param id
      * @exception CollectionInfo 존재할 경우
      */
-
+    //Todo: ???? bookNumber를 프론트엔드 한태서 받음?
     public void addBookNumber(long bookNumber, long id){
         Optional<CollectionInfo> existingCollection = collectionRepository.findByBookNumber(bookNumber);
 
@@ -117,6 +123,7 @@ public class BookService {
      * 반납 최종 확인
      * @param adminRequest
      */
+    @Transactional
     public void adminCheck(AdminRequest adminRequest){
         List<Long> ids = adminRequest.getIds();
 
@@ -150,28 +157,31 @@ public class BookService {
      * 책 소실 처리
      * @param adminRequest
      */
+    @Transactional
     public void lostBook(AdminRequest adminRequest){
         List<Long> ids = adminRequest.getIds();
-        for(Long id : ids) {
-            updateLostBook(id);
-        }
 
-    }
+        List<CollectionInfo> collectionInfos = collectionRepository.findAllByIdIn(ids);
 
-    /**
-     * 소실 트랜잭션 처리
-     * @param id
-     */
-    @Transactional
-    public void updateLostBook(Long id) {
-        Optional<CollectionInfo> collectionInfoOptional = collectionRepository.findById(id);
-
-        if (collectionInfoOptional.isPresent()) {
-            CollectionInfo collectionInfo = collectionInfoOptional.get();
-            collectionInfo.lostBook(!collectionInfo.isLost());
-            collectionRepository.save(collectionInfo);
-        } else {
+        if (ids.size() != collectionInfos.size()) {
+            Long id = findIdNotInCollection(ids, collectionInfos);
             throw new EntityNotFoundException(id, CollectionInfo.class);
         }
+
+        for (CollectionInfo info : collectionInfos) {
+            info.lostBook(!info.isLost());
+        }
     }
+
+    private Long findIdNotInCollection(List<Long> ids, List<CollectionInfo> collectionInfos) {
+        Set<Long> idSet = new HashSet<>(ids);
+        List<Long> cids = collectionInfos.stream().map((CollectionInfo::getId)).toList();
+
+        for(Long cid: cids) {
+            if (!idSet.contains(cid)) return cid;
+        }
+        return null;
+    }
+
+
 }

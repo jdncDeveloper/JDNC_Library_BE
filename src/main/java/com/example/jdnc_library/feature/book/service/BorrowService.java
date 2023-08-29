@@ -31,6 +31,7 @@ public class BorrowService {
      * @param bookNumber
      * @return
      */
+    @Transactional
     public BorrowDetailDTO qrBook(long bookNumber){
         CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
                 .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));

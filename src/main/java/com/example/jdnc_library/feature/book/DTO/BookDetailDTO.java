@@ -1,7 +1,10 @@
 package com.example.jdnc_library.feature.book.DTO;
 
+import com.example.jdnc_library.domain.book.model.BookGroup;
 import com.example.jdnc_library.domain.book.model.BookInfo;
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
+import java.util.Collections;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,12 +28,35 @@ public class BookDetailDTO {
 
     private String publisher;
 
-    private Enum bookGroup;
+    private BookGroup bookGroup;
 
     private boolean available;
 
-    public static BookDetailDTO of(BookInfo bookInfo, boolean available) {
-        return new BookDetailDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getContent(), bookInfo.getAuthor(), bookInfo.getPublisher(), bookInfo.getBookGroup(),available);
+    private List<Long> bookNumbers;
+
+    public static BookDetailDTO of(BookInfo bookInfo) {
+        List<CollectionInfo> collectionInfos = bookInfo.getCollectionInfos();
+
+        boolean flag = false;
+
+        for (CollectionInfo collectionInfo : collectionInfos) {
+            if (collectionInfo.isAvailable()) {
+                flag = true;
+                break;
+            }
+        }
+
+        return new BookDetailDTO(
+            bookInfo.getId(),
+            bookInfo.getTitle(),
+            bookInfo.getImage(),
+            bookInfo.getContent(),
+            bookInfo.getAuthor(),
+            bookInfo.getPublisher(),
+            bookInfo.getBookGroup(),
+            flag,
+            collectionInfos.stream().map((CollectionInfo::getId)).toList()
+        );
     }
 
 
