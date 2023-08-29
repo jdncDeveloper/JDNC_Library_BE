@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -71,5 +72,14 @@ public class MemberController {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    @GetMapping("/user")
+//    @Secured("ROLE_MANAGER")
+    @Operation(summary = "검색한 유저 정보 리턴", description = "검색한 이름과 일치하는 유저 정보를 리턴합니다")
+    public List<MemberDTO> getSearchUserInfo(@RequestParam String name) {
+        List<MemberDTO> searchUserInfo = memberService.getSearchUser(name);
+
+        return searchUserInfo;
     }
 }

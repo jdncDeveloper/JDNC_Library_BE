@@ -64,4 +64,16 @@ public class MemberService {
         Role role = principalDetails.getMember().getRole();
         return role;
     }
+
+    public List<MemberDTO> getSearchUser(String name) {
+        List<Member> userList = memberRepository.findAllByName(name);
+        List<MemberDTO> memberDTOList = new ArrayList<>();
+        for(Member m : userList) {
+            MemberDTO newDTO = new MemberDTO();
+            newDTO.setMbNumber(m.getUsername());
+            newDTO.setName(m.getName());
+            memberDTOList.add(newDTO);
+        }
+        return memberDTOList;
+    }
 }
