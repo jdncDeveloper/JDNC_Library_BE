@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,6 +23,10 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class NaverAPIService {
+    @Value("${naver.client.id}")
+    private String clientId;
+    @Value("${naver.client.secret}")
+    private String clientSecret;
 
     public List<ExtractionBookInfoDTO> GetBookInfoList(String title, int page) throws URISyntaxException {
         String encodedTitle;
@@ -38,8 +43,8 @@ public class NaverAPIService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Naver-Client-Id", "5NKGjc1ozV0ZEgq_IbCq");
-        headers.set("X-Naver-Client-Secret", "zD2zJiDPgL");
+        headers.set("X-Naver-Client-Id", clientId);
+        headers.set("X-Naver-Client-Secret", clientSecret);
 
         URI url = new URI("https://openapi.naver.com/v1/search/book.json?query=" + encodedTitle + "&start=" + start);
 

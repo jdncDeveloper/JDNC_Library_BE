@@ -9,12 +9,14 @@ spring:
         - secret
         - smtp
         - springdoc
+        - naverapi
 
       production:
         - production
         - secret
         - smtp
         - springdoc
+        - naverapi
   jpa:
     hibernate:
       ddl-auto: update
