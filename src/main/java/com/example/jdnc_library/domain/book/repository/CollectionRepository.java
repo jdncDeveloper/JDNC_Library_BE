@@ -1,6 +1,7 @@
 package com.example.jdnc_library.domain.book.repository;
 
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
+import java.util.Collection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CollectionRepository extends JpaRepository<CollectionInfo, Integer> {
+public interface CollectionRepository extends JpaRepository<CollectionInfo, Long> {
 
     Optional<CollectionInfo> findByBookNumber(Long bookNumber);
 
@@ -20,6 +21,8 @@ public interface CollectionRepository extends JpaRepository<CollectionInfo, Inte
     List<CollectionInfo> findByBookInfo_id(Long bookInfoId);
 
     Optional<CollectionInfo> findById(Long id);
+
+    List<CollectionInfo> findAllByIdIn(Collection<Long> ids);
 
     @EntityGraph(attributePaths = {"bookInfo"})
     List<CollectionInfo> findAll();

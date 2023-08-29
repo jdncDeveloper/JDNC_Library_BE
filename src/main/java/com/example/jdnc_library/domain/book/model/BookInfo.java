@@ -1,6 +1,6 @@
 package com.example.jdnc_library.domain.book.model;
 
-import com.example.jdnc_library.converter.BookGroupConverter;
+import com.example.jdnc_library.converter.jpa.BookGroupJpaConverter;
 import com.example.jdnc_library.domain.WriterEntity;
 import jakarta.persistence.*;
 import java.util.List;
@@ -34,7 +34,7 @@ public class BookInfo extends WriterEntity {
     private String publisher;
 
     @Column(nullable = false)
-    @Convert(converter = BookGroupConverter.class)
+    @Convert(converter = BookGroupJpaConverter.class)
     private BookGroup bookGroup;
 
     @OneToMany(mappedBy = "bookInfo")
