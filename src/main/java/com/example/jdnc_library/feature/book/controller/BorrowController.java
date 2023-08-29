@@ -34,12 +34,11 @@ public class BorrowController {
      * @param bookNumber
      * @return
      */
-    @GetMapping("/qrbook")
+    @GetMapping("/{bookNumber}")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
-    @Transactional
     public ResponseData<BorrowDetailDTO> qrBook(
-            @RequestParam(value = "bookNumber") @Positive long bookNumber){
+            @PathVariable(value = "bookNumber") @Positive long bookNumber){
         return new ResponseData<>(borrowService.qrBook(bookNumber));
     }
 
@@ -48,7 +47,7 @@ public class BorrowController {
      * @param bookNumber
      *
      */
-    @GetMapping("/borrowbook")
+    @PostMapping
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
     public void borrowBook(
@@ -60,10 +59,9 @@ public class BorrowController {
      * QR코드를 이용한 도서 반납 리스트 요청
      * @return List<BorrowDTO>
      */
-    @GetMapping("/returnlist")
+    @GetMapping("/return")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
-    @Transactional
     public ResponseData<List<BorrowListDTO>> returnList(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault Pageable pageable){
@@ -74,7 +72,7 @@ public class BorrowController {
      * 도서 반납 요청
      * @param bookNumber
      */
-    @GetMapping("/return")
+    @PutMapping("/return")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void returnBook(

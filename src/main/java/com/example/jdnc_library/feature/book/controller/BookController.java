@@ -33,7 +33,7 @@ public class BookController {
 
     }
 
-    @GetMapping("/detail/{bookId}")
+    @GetMapping("/{bookId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<BookDetailDTO> getBookDetail(
             @PathVariable(value = "bookId") @Positive long id){
