@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +22,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public List<MemberDTO> getMemberList(Pageable pageable) {
+    public List<MemberDTO> getMemberList() {
+        Pageable pageable = PageRequest.of(0, 100);
         Page<Member> memberList = memberRepository.findAll(pageable);
 
         List<MemberDTO> list = new ArrayList<>();
@@ -72,6 +74,9 @@ public class MemberService {
             MemberDTO newDTO = new MemberDTO();
             newDTO.setMbNumber(m.getUsername());
             newDTO.setName(m.getName());
+            newDTO.setEmail(m.getEmail());
+            newDTO.setRole(m.getRole());
+
             memberDTOList.add(newDTO);
         }
         return memberDTOList;

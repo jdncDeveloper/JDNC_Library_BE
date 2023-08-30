@@ -65,9 +65,9 @@ public class MemberController {
     //    @Secured("ROLE_MANAGER")
     @Operation(summary = "유저 리스트 요청", description = "모든 유저 리스트를 리턴")
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberDTO> getMemberList(Pageable pageable) {
+    public List<MemberDTO> getMemberList() {
         try {
-            List<MemberDTO> result = memberService.getMemberList(pageable);
+            List<MemberDTO> result = memberService.getMemberList();
 
             return result;
         } catch (Exception e) {
