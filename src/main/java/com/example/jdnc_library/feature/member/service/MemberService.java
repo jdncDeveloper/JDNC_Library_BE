@@ -5,6 +5,7 @@ import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import com.example.jdnc_library.exception.clienterror._400.BadRequestException;
 import com.example.jdnc_library.feature.member.DTO.MemberDTO;
+import com.example.jdnc_library.feature.member.DTO.PagedMemberDTO;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,13 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public List<MemberDTO> getMemberList(int page) {
-        if(page < 1) throw new BadRequestException("옳지 못한 page 번호입니다");
-        Pageable pageable = PageRequest.of(page - 1, 15);
+    public PagedMemberDTO getMemberList(int page) {
+        int ontPageSize = 15;
+        Pageable pageable = PageRequest.of(0, ontPageSize);;
+        int totalPage = memberRepository.findAll(pageable).getTotalPages();
+
+        if(page < 1 || page > totalPage) throw new BadRequestException("옳지 못한 page 번호입니다");
+        pageable = PageRequest.of(page - 1, ontPageSize);
         Page<Member> memberList = memberRepository.findAll(pageable);
 
         List<MemberDTO> list = new ArrayList<>();
@@ -42,7 +47,11 @@ public class MemberService {
             throw new BadRequestException("유저가 존재하지 않습니다");
         }
 
-        return list;
+        PagedMemberDTO pagedList = new PagedMemberDTO();
+        pagedList.setTotalPage(totalPage);
+        pagedList.setMemberDTOList(list);
+
+        return pagedList;
     }
 
     public MemberDTO getMember() {
