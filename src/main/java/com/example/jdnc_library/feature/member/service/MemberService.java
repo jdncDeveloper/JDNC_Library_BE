@@ -22,8 +22,9 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public List<MemberDTO> getMemberList() {
-        Pageable pageable = PageRequest.of(0, 100);
+    public List<MemberDTO> getMemberList(int page) {
+        if(page < 1) throw new BadRequestException("옳지 못한 page 번호입니다");
+        Pageable pageable = PageRequest.of(page - 1, 15);
         Page<Member> memberList = memberRepository.findAll(pageable);
 
         List<MemberDTO> list = new ArrayList<>();
