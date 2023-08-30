@@ -2,17 +2,13 @@ package com.example.jdnc_library.feature.book.repository;
 
 import static com.example.jdnc_library.domain.book.model.QBookInfo.bookInfo;
 import static com.example.jdnc_library.domain.book.model.QCollectionInfo.collectionInfo;
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
 
 import com.example.jdnc_library.domain.book.model.BookGroup;
 import com.example.jdnc_library.domain.book.model.BookInfo;
-import com.example.jdnc_library.feature.book.DTO.BookDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BookListDTO;
 import com.example.jdnc_library.util.Querydsl4ExpressionUtil;
 import com.example.jdnc_library.util.Querydsl4RepositorySupport;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +38,10 @@ public class BookInfoQueryRepository extends Querydsl4RepositorySupport {
             )
             .where(Querydsl4ExpressionUtil.contains(bookInfo.title, title))
             .groupBy(bookInfo.id);
+
+        //collectionInfo.available = 이미 left join에서 필터링햇기때문에 해당 컬럼을 조회 하는 건 문제가 없다
+        //group by - id로 그룹 지어줘서 bookInfo에는 문제가 없다.
+
 
         if (bookGroup != null) {
             jpaQuery.where(bookInfo.bookGroup.eq(bookGroup));

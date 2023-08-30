@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: ${db_url}
+    username: ${db_username}
+    password: ${db_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver  #버전에 따라 cj가 들어갈수도 안들어갈수도
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    port: 587
+    username: ${smtp_mail_username}
+    password: ${smtp_mail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          debug: true
+          starttls:
+            enable: true
+        mime:
+          charset: UTF-8
+        transport:
+          protocol: smtp
+
+naver:
+  client:
+    id: ${naver_client_id}
+    secret: ${naver_client_secret}
+
+jwt:
+  access: ${secret_jwt_access}
+  refresh: ${secret_jwt_refresh}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    tagsSorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
