@@ -13,10 +13,6 @@ spring:
 
       production:
         - production
-        - secret
-        - smtp
-        - springdoc
-        - naverapi
   jpa:
     hibernate:
       ddl-auto: update
