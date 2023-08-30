@@ -2,6 +2,7 @@ package com.example.jdnc_library.feature.member.controller;
 
 import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.feature.member.DTO.MemberDTO;
+import com.example.jdnc_library.feature.member.DTO.PagedMemberDTO;
 import com.example.jdnc_library.feature.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
@@ -66,9 +67,9 @@ public class MemberController {
     //    @Secured("ROLE_MANAGER")
     @Operation(summary = "유저 리스트 요청", description = "모든 유저 리스트를 리턴")
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberDTO> getMemberList(@PathVariable int page) {
+    public PagedMemberDTO getMemberList(@PathVariable int page) {
         try {
-            List<MemberDTO> result = memberService.getMemberList(page);
+            PagedMemberDTO result = memberService.getMemberList(page);
 
             return result;
         } catch (Exception e) {
