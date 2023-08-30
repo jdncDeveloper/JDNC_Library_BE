@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -61,13 +62,13 @@ public class MemberController {
      *  -> 리스트를 size 씩 나눈것들 중에 page 번째의 값을을 호출
      *  -> page=1, size=10 이라고 가정하면 10~19.
      */
-    @GetMapping("/list")
+    @GetMapping("/list/{page}")
     //    @Secured("ROLE_MANAGER")
     @Operation(summary = "유저 리스트 요청", description = "모든 유저 리스트를 리턴")
     @ResponseStatus(HttpStatus.OK)
-    public List<MemberDTO> getMemberList() {
+    public List<MemberDTO> getMemberList(@PathVariable int page) {
         try {
-            List<MemberDTO> result = memberService.getMemberList();
+            List<MemberDTO> result = memberService.getMemberList(page);
 
             return result;
         } catch (Exception e) {
