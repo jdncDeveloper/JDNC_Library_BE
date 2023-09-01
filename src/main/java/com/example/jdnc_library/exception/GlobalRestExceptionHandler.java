@@ -24,6 +24,12 @@ public class GlobalRestExceptionHandler {
         return new ResponseError<String> (ex.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError<String> handleIllegalArgument(IllegalArgumentException ex) {
+        return new ResponseError<String> (ex.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseError<List<String>> handleValidException(MethodArgumentNotValidException ex) {
