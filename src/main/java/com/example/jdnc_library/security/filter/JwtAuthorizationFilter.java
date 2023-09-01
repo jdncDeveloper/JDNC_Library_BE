@@ -40,20 +40,25 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         FilterChain chain) throws IOException, ServletException {
 
         String token = tokenProvider.resolveAccessTokenByHeader(request);
-        try {
-            Long id = tokenProvider.parseIdByJwt(token);
-            Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(id, Member.class));
-            PrincipalDetails principalDetails = new PrincipalDetails(member);
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                principalDetails, null, principalDetails.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        if (token == null) {
             chain.doFilter(request, response);
-        } catch (TokenExpiredException e) {
-            response.sendError(401, e.getMessage());
+        } else {
+            try {
+                Long id = tokenProvider.parseIdByJwt(token);
+                Member member = memberRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException(id, Member.class));
+                PrincipalDetails principalDetails = new PrincipalDetails(member);
+
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    principalDetails, null, principalDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                chain.doFilter(request, response);
+            } catch (TokenExpiredException e) {
+                response.sendError(401, e.getMessage());
+            }
         }
     }
 

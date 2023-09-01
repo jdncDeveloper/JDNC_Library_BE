@@ -56,12 +56,13 @@ public class TokenProvider {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
         if (!StringUtils.hasText(bearerToken)) {
-            throw new UnauthorizedException(emptyHeaderMessage);
+            return null;
         }
 
         if (!bearerToken.startsWith(TOKEN_START_WITH)){
-            throw new UnauthorizedException(unsupportedHeader);
+            return null;
         }
+
         return bearerToken.substring(7);
     }
 
@@ -69,11 +70,11 @@ public class TokenProvider {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER_REFRESH);
 
         if (!StringUtils.hasText(bearerToken)) {
-            throw new UnauthorizedException(emptyHeaderMessage);
+            return null;
         }
 
         if (!bearerToken.startsWith(TOKEN_START_WITH)){
-            throw new UnauthorizedException(unsupportedHeader);
+            return null;
         }
         return bearerToken.substring(7);
     }
