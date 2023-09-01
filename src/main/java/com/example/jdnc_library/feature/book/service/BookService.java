@@ -7,6 +7,7 @@ import com.example.jdnc_library.domain.book.model.CollectionInfo;
 import com.example.jdnc_library.domain.book.repository.BookRepository;
 import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
+import com.example.jdnc_library.exception.clienterror._400.BadRequestException;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
 import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
@@ -44,7 +45,7 @@ public class BookService {
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-        List<BorrowInfo> returnedInMonth = borrowRepository.findByCreatedAtBetween(startOfMonth, endOfMonth, pageable).getContent();
+        List<BorrowInfo> returnedInMonth = borrowRepository.findByCreatedAtBetweenOrAdminCheckIsFalse(startOfMonth, endOfMonth, pageable).getContent();
 
         return returnedInMonth.stream()
                 .map(BorrowListDTO::of)
@@ -56,10 +57,10 @@ public class BookService {
      * @return List<BorrowDTO>
      */
     @Transactional
-    public List<BorrowListDTO> searchNotReturnBooks(Pageable pageable) {
-        List<BorrowInfo> notReturnedBorrows = borrowRepository.findByReturnDateIsNull(pageable).getContent();
+    public List<BorrowListDTO> searchNotCheckedBooks(Pageable pageable) {
+        List<BorrowInfo> notCheckedBorrows = borrowRepository.findByAdminCheckIsFalse(pageable).getContent();
 
-        return notReturnedBorrows.stream()
+        return notCheckedBorrows.stream()
                 .map(BorrowListDTO::of)
                 .collect(Collectors.toList());
     }
@@ -142,12 +143,16 @@ public class BookService {
 
         if (borrowInfoOptional.isPresent()) {
             BorrowInfo borrowInfo = borrowInfoOptional.get();
-            borrowInfo.updateAdminCheck(true);
-            borrowRepository.save(borrowInfo);
+            if(borrowInfo.getReturnDate() != null){
+                borrowInfo.updateAdminCheck(true);
+                borrowRepository.save(borrowInfo);
 
-            CollectionInfo collectionInfo = borrowInfo.getCollectionInfo();
-            collectionInfo.updateAvailable(true);
-            collectionRepository.save(collectionInfo);
+                CollectionInfo collectionInfo = borrowInfo.getCollectionInfo();
+                collectionInfo.updateAvailable(true);
+                collectionRepository.save(collectionInfo);
+            } else {
+                throw new BadRequestException();
+            }
         } else {
             throw new EntityNotFoundException(id, BookInfo.class);
         }
