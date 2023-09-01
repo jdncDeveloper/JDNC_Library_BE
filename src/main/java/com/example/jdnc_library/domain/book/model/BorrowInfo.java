@@ -28,14 +28,13 @@ public class BorrowInfo extends WriterEntity {
     private LocalDateTime returnDate;
 
     @Column
-    private int state;
+    private Integer state;
 
     public BorrowInfo(CollectionInfo collectionInfo){
         this.collectionInfo = collectionInfo;
         this.adminCheck = false;
         this.returnDate = null;
     }
-
 
     public void returnBook(LocalDateTime returnDate, int state){
         this.returnDate = returnDate;
