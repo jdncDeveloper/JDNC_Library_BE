@@ -44,21 +44,18 @@ public class BorrowService {
      * 책을 빌릴 때 데이터베이스에 저장
      * @param bookNumber
      */
-    //TODO : 중복 대여 처리하기
     @Transactional
     public void borrowBook(long bookNumber){
-        Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findByCollectionInfo_BookNumberAndReturnDateIsNull(bookNumber);
-        if(borrowInfoOptional.isPresent()){
+        if(borrowInfoQueryRepository.isExistNonReturnBorrowInfo(bookNumber)){
             throw new ExistEntityException();
         }
-        else {
-            CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
-                    .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
 
-            BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
-            borrowRepository.save(borrowInfo);
-            collectionInfo.updateAvailable(false);
-        }
+        CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
+            .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
+
+        BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
+        borrowRepository.save(borrowInfo);
+        collectionInfo.updateAvailable(false);
     }
 
     /**

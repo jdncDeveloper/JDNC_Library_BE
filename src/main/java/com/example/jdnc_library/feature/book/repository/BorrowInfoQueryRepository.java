@@ -54,6 +54,9 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
                 .and(borrowInfo.returnDate.isNull())).fetchJoin().fetchOne();
 
         return Optional.ofNullable(borrowInfo1);
+    }
 
+    public boolean isExistNonReturnBorrowInfo(Long bookNumber) {
+        return getNonReturnBorrowInfo(bookNumber).isPresent();
     }
 }
