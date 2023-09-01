@@ -35,15 +35,13 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
                 bookInfo.content,
                 bookInfo.author,
                 bookInfo.publisher,
-                borrowInfo.returnDate
-            )
+                borrowInfo.returnDate)
         ).from(borrowInfo)
             .join(borrowInfo.collectionInfo, collectionInfo)
             .join(collectionInfo.bookInfo, bookInfo)
-            .join(bookInfo.createdBy, member)
+            .join(borrowInfo.createdBy, member)
             .where(member.id.eq(memberId)
                 .and(borrowInfo.returnDate.isNull()));
-
     }
 
     public Page<BorrowListDTO> getNotYetReturnBookList(Long memberId, Pageable pageable) {
