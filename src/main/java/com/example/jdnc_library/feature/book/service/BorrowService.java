@@ -5,6 +5,7 @@ import com.example.jdnc_library.domain.book.model.CollectionInfo;
 import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.domain.member.model.Member;
+import com.example.jdnc_library.exception.clienterror._400.LimitOutBookBorrowSizeException;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
 import com.example.jdnc_library.exception.clienterror._400.ExistEntityException;
 import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class BorrowService {
     private final CollectionRepository collectionRepository;
     private final BorrowRepository borrowRepository;
     private final BorrowInfoQueryRepository borrowInfoQueryRepository;
-
+    private final int LIMIT_BOOK_BORROW_COUNT = 3;
     /**
      * 책의 QR을 찍었을 때 책 정보 리턴
      * @param bookNumber
@@ -45,8 +45,11 @@ public class BorrowService {
      * @param bookNumber
      */
     @Transactional
-    public void borrowBook(long bookNumber){
-        if(borrowInfoQueryRepository.isExistNonReturnBorrowInfo(bookNumber)){
+    public void borrowBook(long bookNumber, Member member){
+
+        if (!isBorrowBook(member)) throw new LimitOutBookBorrowSizeException(member.getId());
+
+        if (borrowInfoQueryRepository.isExistNonReturnBorrowInfo(bookNumber)){
             throw new ExistEntityException();
         }
 
@@ -66,8 +69,7 @@ public class BorrowService {
     @Transactional
     public List<BorrowListDTO> returnBookList(PrincipalDetails principalDetails, Pageable pageable){
         Member me = principalDetails.getMember();
-
-        return borrowInfoQueryRepository.getReturnBookList(me.getId(), pageable).getContent();
+        return borrowInfoQueryRepository.getNotYetReturnBookList(me.getId(), pageable).getContent();
     }
 
     /**
@@ -80,4 +82,9 @@ public class BorrowService {
             .orElseThrow(() -> new EntityNotFoundException(bookNumber, BorrowInfo.class));
         borrowInfo.returnBook(LocalDateTime.now(), state);
     }
+
+    private boolean isBorrowBook(Member member) {
+        return borrowInfoQueryRepository.getNotYetReturnBookListSize(member.getId()) < LIMIT_BOOK_BORROW_COUNT;
+    }
+
 }

@@ -22,8 +22,8 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
         super(BorrowInfo.class);
     }
 
-    public Page<BorrowListDTO> getReturnBookList (Long memberId, Pageable pageable) {
-        JPAQuery<BorrowListDTO> query = select(
+    private JPAQuery<BorrowListDTO> getNotYetReturnListQuery(Long memberId) {
+        return select(
             Projections.constructor(
                 BorrowListDTO.class,
                 borrowInfo.id,
@@ -44,7 +44,15 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
             .where(member.id.eq(memberId)
                 .and(borrowInfo.returnDate.isNull()));
 
+    }
+
+    public Page<BorrowListDTO> getNotYetReturnBookList(Long memberId, Pageable pageable) {
+        JPAQuery<BorrowListDTO> query = getNotYetReturnListQuery(memberId);
         return applyPagination(pageable, query);
+    }
+
+    public int getNotYetReturnBookListSize(Long memberId) {
+        return getNotYetReturnListQuery(memberId).fetch().size();
     }
 
     public Optional<BorrowInfo> getNonReturnBorrowInfo(Long bookNumber) {
