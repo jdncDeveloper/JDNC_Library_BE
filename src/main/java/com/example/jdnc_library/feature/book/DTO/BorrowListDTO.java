@@ -3,6 +3,7 @@ package com.example.jdnc_library.feature.book.DTO;
 import com.example.jdnc_library.domain.book.model.BorrowInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,9 @@ public class BorrowListDTO {
      * 날짜 표기 JSON변환설정
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate borrowDate;
+    private LocalDateTime borrowDate;
 
-    private long bookNumber;
+    private Long bookNumber;
 
     private String image;
 
@@ -40,7 +41,7 @@ public class BorrowListDTO {
     private String publisher;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate returnDate;
+    private LocalDateTime returnDate;
 
 
     @JsonProperty("borrowDate")
@@ -63,7 +64,7 @@ public class BorrowListDTO {
         BorrowListDTO borrowListDTO = new BorrowListDTO();
         borrowListDTO.setBorrowId(borrowInfo.getId());
         borrowListDTO.setBorrowerName(borrowInfo.getCreatedBy().getName());
-        borrowListDTO.setBorrowDate(LocalDate.from(borrowInfo.getCreatedAt()));
+        borrowListDTO.setBorrowDate(borrowInfo.getCreatedAt());
         borrowListDTO.setBookNumber(borrowInfo.getCollectionInfo().getBookNumber());
         borrowListDTO.setImage(borrowInfo.getCollectionInfo().getBookInfo().getImage());
         borrowListDTO.setContent(borrowInfo.getCollectionInfo().getBookInfo().getContent());
