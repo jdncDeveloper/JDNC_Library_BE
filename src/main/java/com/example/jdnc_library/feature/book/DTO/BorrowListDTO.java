@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Setter
@@ -25,7 +26,7 @@ public class BorrowListDTO {
     /**
      * 날짜 표기 JSON변환설정
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime borrowDate;
 
     private Long bookNumber;
@@ -34,20 +35,19 @@ public class BorrowListDTO {
 
     private String title;
 
-    private String content;
-
     private String author;
 
     private String publisher;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime returnDate;
 
 
     @JsonProperty("borrowDate")
     public String getBorrowDate() {
         if (borrowDate != null) {
-            return borrowDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return borrowDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
         return null;
     }
@@ -55,7 +55,7 @@ public class BorrowListDTO {
     @JsonProperty("returnDate")
     public String getReturnDate() {
         if (returnDate != null) {
-            return returnDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return returnDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
         return null;
     }
@@ -67,10 +67,10 @@ public class BorrowListDTO {
         borrowListDTO.setBorrowDate(borrowInfo.getCreatedAt());
         borrowListDTO.setBookNumber(borrowInfo.getCollectionInfo().getBookNumber());
         borrowListDTO.setImage(borrowInfo.getCollectionInfo().getBookInfo().getImage());
-        borrowListDTO.setContent(borrowInfo.getCollectionInfo().getBookInfo().getContent());
         borrowListDTO.setTitle(borrowInfo.getCollectionInfo().getBookInfo().getTitle());
         borrowListDTO.setAuthor(borrowInfo.getCollectionInfo().getBookInfo().getAuthor());
         borrowListDTO.setPublisher(borrowInfo.getCollectionInfo().getBookInfo().getPublisher());
+        borrowListDTO.setReturnDate(borrowInfo.getReturnDate());
         return borrowListDTO;
     }
 }

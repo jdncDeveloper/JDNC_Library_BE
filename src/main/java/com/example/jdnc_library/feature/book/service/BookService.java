@@ -12,6 +12,8 @@ import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundExcepti
 import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
+
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -42,8 +44,8 @@ public class BookService {
      */
     @Transactional
     public List<BorrowListDTO> searchBooksBorrowedInMonth(int year, int month, Pageable pageable) {
-        LocalDate startOfMonth = LocalDate.of(year, month, 1);
-        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime endOfMonth = LocalDateTime.of(year, month, startOfMonth.getDayOfMonth(), 23, 59, 59);
 
         List<BorrowInfo> returnedInMonth = borrowRepository.findByCreatedAtBetweenOrAdminCheckIsFalse(startOfMonth, endOfMonth, pageable).getContent();
 
