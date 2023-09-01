@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,7 @@ public class BorrowService {
 
     /**
      * 반납함 QR을 찍었을 때 반납 가능한 도서 리스트를 리턴
-     * @param member
+     *
      * @return
      */
     @Transactional
@@ -78,10 +77,10 @@ public class BorrowService {
      * 책 한권을 반납하면 데이터베이스에 저장
      * @param bookNumber
      */
+    @Transactional
     public void returnBook(long bookNumber, int state) {
-        Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findByCollectionInfo_BookNumberAndReturnDateIsNull(bookNumber);
-        BorrowInfo borrowInfo = borrowInfoOptional.get();
+        BorrowInfo borrowInfo = borrowInfoQueryRepository.getNonReturnBorrowInfo(bookNumber)
+            .orElseThrow(() -> new EntityNotFoundException(bookNumber, BorrowInfo.class));
         borrowInfo.returnBook(LocalDateTime.now(), state);
-        borrowRepository.save(borrowInfo);
     }
 }

@@ -10,6 +10,7 @@ import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import com.example.jdnc_library.util.Querydsl4RepositorySupport;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -44,5 +45,15 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
                 .and(borrowInfo.returnDate.isNull()));
 
         return applyPagination(pageable, query);
+    }
+
+    public Optional<BorrowInfo> getNonReturnBorrowInfo(Long bookNumber) {
+        BorrowInfo borrowInfo1 = selectFrom(borrowInfo)
+            .join(borrowInfo.collectionInfo, collectionInfo)
+            .where(collectionInfo.bookNumber.eq(bookNumber)
+                .and(borrowInfo.returnDate.isNull())).fetchJoin().fetchOne();
+
+        return Optional.ofNullable(borrowInfo1);
+
     }
 }
