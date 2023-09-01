@@ -64,7 +64,7 @@ public class BorrowController {
     public ResponseData<List<BorrowListDTO>> returnList(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault Pageable pageable){
-        return new ResponseData<>(borrowService.returnBookList(principalDetails.getMember(), pageable));
+        return new ResponseData<>(borrowService.returnBookList(principalDetails, pageable));
     }
 
     /**

@@ -2,6 +2,7 @@ package com.example.jdnc_library.security.model;
 
 
 import com.example.jdnc_library.domain.member.model.Member;
+import com.example.jdnc_library.exception.clienterror._401.NotLoginException;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.Data;
@@ -27,6 +28,14 @@ public class PrincipalDetails implements UserDetails { //이렇게 하면 Authen
         Collection<GrantedAuthority> collect = new ArrayList<>();
         collect.add(member.getRole());
         return collect;
+    }
+
+    public Member getMember() throws NotLoginException {
+        if (member == null) {
+            throw new NotLoginException("유저 정보가 없습니다.");
+        }
+
+        return member;
     }
 
     @Override

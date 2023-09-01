@@ -9,6 +9,8 @@ import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundExcepti
 import com.example.jdnc_library.exception.clienterror._400.ExistEntityException;
 import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
+import com.example.jdnc_library.feature.book.repository.BorrowInfoQueryRepository;
+import com.example.jdnc_library.security.model.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class BorrowService {
 
     private final CollectionRepository collectionRepository;
     private final BorrowRepository borrowRepository;
+    private final BorrowInfoQueryRepository borrowInfoQueryRepository;
 
     /**
      * 책의 QR을 찍었을 때 책 정보 리턴
@@ -65,12 +68,10 @@ public class BorrowService {
      * @return
      */
     @Transactional
-    public List<BorrowListDTO> returnBookList(Member member, Pageable pageable){
-        List<BorrowInfo> borrowInfoList = borrowRepository.findAllByCreatedByAndReturnDateIsNull(member, pageable).getContent();
+    public List<BorrowListDTO> returnBookList(PrincipalDetails principalDetails, Pageable pageable){
+        Member me = principalDetails.getMember();
 
-        return borrowInfoList.stream()
-                .map(BorrowListDTO::of)
-                .collect(Collectors.toList());
+        return borrowInfoQueryRepository.getReturnBookList(me.getId(), pageable).getContent();
     }
 
     /**
