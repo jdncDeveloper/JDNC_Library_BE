@@ -54,6 +54,7 @@ public class AdminBookController {
      * @param pageable
      * @return
      */
+    //TODO : 주소 수정 필요
     @GetMapping("/monthly")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<List<BorrowListDTO>> monthlyBorrow(
@@ -68,11 +69,12 @@ public class AdminBookController {
      * @param pageable
      * @return
      */
+    //TODO : 주소 수정 필요
     @GetMapping("/overdue")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<List<BorrowListDTO>> overdue(
             @PageableDefault Pageable pageable){
-        return new ResponseData<>(bookService.searchNotReturnBooks(pageable));
+        return new ResponseData<>(bookService.searchNotCheckedBooks(pageable));
     }
 
 
