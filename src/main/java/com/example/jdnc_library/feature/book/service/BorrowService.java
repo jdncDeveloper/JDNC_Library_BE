@@ -7,7 +7,7 @@ import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
 import com.example.jdnc_library.exception.clienterror._400.ExistEntityException;
-import com.example.jdnc_library.feature.book.DTO.BorrowDetailDTO;
+import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +31,11 @@ public class BorrowService {
      * @param bookNumber
      * @return
      */
-    @Transactional
-    public BorrowDetailDTO qrBook(long bookNumber){
+    @Deprecated
+    public CollectionDetailDTO qrBook(long bookNumber){
         CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
                 .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
-        return BorrowDetailDTO.of(collectionInfo);
+        return CollectionDetailDTO.of(collectionInfo);
     }
 
     /**

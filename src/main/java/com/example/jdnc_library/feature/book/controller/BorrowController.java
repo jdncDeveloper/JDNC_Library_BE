@@ -1,10 +1,10 @@
 package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.domain.ResponseData;
-import com.example.jdnc_library.feature.book.DTO.BorrowDetailDTO;
+import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
-import com.example.jdnc_library.feature.book.service.BookService;
 import com.example.jdnc_library.feature.book.service.BorrowService;
+import com.example.jdnc_library.feature.book.service.CollectionInfoService;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class BorrowController {
     //TODO: @transactional 처리하기
 
     private final BorrowService borrowService;
-
+    private final CollectionInfoService collectionInfoService;
     /**
      * QR코드를 이용한 도서 대출 페이지 요청
      * @param bookNumber
@@ -37,9 +36,9 @@ public class BorrowController {
     @GetMapping("/{bookNumber}")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<BorrowDetailDTO> qrBook(
+    public ResponseData<CollectionDetailDTO> qrBook(
             @PathVariable(value = "bookNumber") @Positive long bookNumber){
-        return new ResponseData<>(borrowService.qrBook(bookNumber));
+        return new ResponseData<>(collectionInfoService.qrBook(bookNumber));
     }
 
     /**
