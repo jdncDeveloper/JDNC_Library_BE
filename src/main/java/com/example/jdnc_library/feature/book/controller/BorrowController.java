@@ -50,8 +50,9 @@ public class BorrowController {
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
     public void borrowBook(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(value = "bookNumber") @Positive long bookNumber){
-        borrowService.borrowBook(bookNumber);
+        borrowService.borrowBook(bookNumber, principalDetails.getMember());
     }
 
     /**
