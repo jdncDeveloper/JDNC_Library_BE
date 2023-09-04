@@ -41,8 +41,11 @@ public class BookService {
      */
     @Transactional
     public List<BorrowListDTO> searchBooksBorrowedInMonth(int year, int month, Pageable pageable) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        int lastDay = yearMonth.lengthOfMonth();
+
         LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0);
-        LocalDateTime endOfMonth = LocalDateTime.of(year, month, startOfMonth.getDayOfMonth(), 23, 59, 59);
+        LocalDateTime endOfMonth = LocalDateTime.of(year, month, lastDay, 23, 59, 59);
 
         List<BorrowInfo> returnedInMonth = borrowRepository.findByCreatedAtBetweenOrAdminCheckIsFalse(startOfMonth, endOfMonth, pageable).getContent();
 
@@ -160,21 +163,17 @@ public class BookService {
 
     /**
      * 책 소실 처리
-     * @param adminRequest
+     * @param bookNumber
      */
     @Transactional
-    public void lostBook(AdminRequest adminRequest){
-        List<Long> ids = adminRequest.getIds();
-
-        List<CollectionInfo> collectionInfos = collectionRepository.findAllByIdIn(ids);
-
-        if (ids.size() != collectionInfos.size()) {
-            Long id = findIdNotInCollection(ids, collectionInfos);
-            throw new EntityNotFoundException(id, CollectionInfo.class);
+    public void lostBook(Long bookNumber){
+        Optional<CollectionInfo> collectionInfoOptional = collectionRepository.findByBookNumber(bookNumber);
+        if(collectionInfoOptional.isPresent()){
+            CollectionInfo collectionInfo = collectionInfoOptional.get();
+            collectionInfo.lostBook(!collectionInfo.isLost());
         }
-
-        for (CollectionInfo info : collectionInfos) {
-            info.lostBook(!info.isLost());
+        else {
+            throw new EntityNotFoundException(bookNumber, CollectionInfo.class);
         }
     }
 
