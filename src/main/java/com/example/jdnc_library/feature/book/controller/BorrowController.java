@@ -1,8 +1,10 @@
 package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.domain.ResponseData;
+import com.example.jdnc_library.feature.book.DTO.BookNumberRequest;
 import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
+import com.example.jdnc_library.feature.book.DTO.ReturnRequest;
 import com.example.jdnc_library.feature.book.service.BorrowService;
 import com.example.jdnc_library.feature.book.service.CollectionInfoService;
 import com.example.jdnc_library.security.model.PrincipalDetails;
@@ -43,7 +45,7 @@ public class BorrowController {
 
     /**
      * 도서 대출 요청
-     * @param bookNumber
+     * @param bookNumberRequest
      *
      */
     @PostMapping
@@ -51,8 +53,8 @@ public class BorrowController {
     @ResponseStatus(HttpStatus.CREATED)
     public void borrowBook(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(value = "bookNumber") @Positive long bookNumber){
-        borrowService.borrowBook(bookNumber, principalDetails.getMember());
+            @RequestBody BookNumberRequest bookNumberRequest){
+        borrowService.borrowBook(bookNumberRequest, principalDetails.getMember());
     }
 
     /**
@@ -70,14 +72,13 @@ public class BorrowController {
 
     /**
      * 도서 반납 요청
-     * @param bookNumber
+     * @param returnRequest
      */
     @PutMapping("/return")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void returnBook(
-            @RequestParam(value = "bookNumber") @Positive long bookNumber,
-            @RequestParam(value = "state") @Positive int state){
-        borrowService.returnBook(bookNumber, state);
+            @RequestBody ReturnRequest returnRequest){
+        borrowService.returnBook(returnRequest.getBookNumber(), returnRequest.getFloor());
     }
 }

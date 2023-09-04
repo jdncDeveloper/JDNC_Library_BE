@@ -3,13 +3,11 @@ package com.example.jdnc_library.feature.book.DTO;
 import com.example.jdnc_library.domain.book.model.BorrowInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -39,12 +37,10 @@ public class BorrowListDTO {
 
     private String publisher;
 
-    private int state;
-
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime returnDate;
 
+    private Integer floor;
 
     @JsonProperty("borrowDate")
     public String getBorrowDate() {
@@ -73,6 +69,7 @@ public class BorrowListDTO {
         borrowListDTO.setAuthor(borrowInfo.getCollectionInfo().getBookInfo().getAuthor());
         borrowListDTO.setPublisher(borrowInfo.getCollectionInfo().getBookInfo().getPublisher());
         borrowListDTO.setReturnDate(borrowInfo.getReturnDate());
+        borrowListDTO.setFloor(borrowInfo.getFloor());
         return borrowListDTO;
     }
 }
