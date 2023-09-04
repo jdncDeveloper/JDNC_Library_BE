@@ -32,7 +32,6 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
                 collectionInfo.bookNumber,
                 bookInfo.image,
                 bookInfo.title,
-                bookInfo.content,
                 bookInfo.author,
                 bookInfo.publisher,
                 borrowInfo.returnDate)

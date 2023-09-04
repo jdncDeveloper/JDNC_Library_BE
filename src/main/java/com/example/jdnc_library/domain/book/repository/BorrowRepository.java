@@ -29,6 +29,6 @@ public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
 
     List<BorrowInfo> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
-    @EntityGraph(attributePaths = {"createdBy"})
+    @EntityGraph(attributePaths = {"createdBy", "collectionInfo.bookInfo"})
     List<BorrowInfo> findAllByAdminCheckIsFalse();
 }
