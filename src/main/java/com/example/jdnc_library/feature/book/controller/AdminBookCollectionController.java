@@ -52,13 +52,12 @@ public class AdminBookCollectionController {
 
     /**
      * 소실 처리
-     * @param adminRequest
+     * @param bookNumber
      */
     @PutMapping("/lost")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    //TODO: 프론트엔드 알림, 멘토링 질문
     public void lostBook(
-        @RequestBody AdminRequest adminRequest){
-        bookService.lostBook(adminRequest);
+        @RequestParam @Positive Long bookNumber){
+        bookService.lostBook(bookNumber);
     }
 }
