@@ -8,9 +8,11 @@ import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,27 +24,27 @@ public class EmailService {
     private final MemberRepository memberRepository;
     private final MakeMailTemplate makeMailTemplate;
 
-    public void SendMail() throws MessagingException {
+    @Async
+    public void sendMail(long id) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        List<BorrowInfo> currentlyBorrowedBooks = borrowRepository.findAllByAdminCheckIsFalse();
+        Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findById(id);
+        BorrowInfo borrowInfo = borrowInfoOptional.get();
         List<Member> admin = memberRepository.findAllByRole(Role.ROLE_ADMIN);
         String adminName = admin.get(0).getName();
 
-        for(BorrowInfo borrowInfo : currentlyBorrowedBooks) {
-            //제목, 내용 설정
-            String title = makeMailTemplate.getMailTitle();
-            String contents = makeMailTemplate.getMailTemplate(adminName, borrowInfo);
-            helper.setSubject(title);
-            helper.setText(contents, false);
+        //제목, 내용 설정
+        String title = makeMailTemplate.getMailTitle();
+        String contents = makeMailTemplate.getMailTemplate(adminName, borrowInfo);
+        helper.setSubject(title);
+        helper.setText(contents, false);
 
-            //수신자 설정(리스트 형태)
-            String userEmail = borrowInfo.getCreatedBy().getEmail();
+        //수신자 설정(리스트 형태)
+        String userEmail = borrowInfo.getCreatedBy().getEmail();
 
-            //메일 전송(setTo 파라미터에 문자열 리스트를 넘기면 한번에 여러명에게 전송 가능)
-            helper.setTo(userEmail);
-            javaMailSender.send(message);
-        }
+        //메일 전송(setTo 파라미터에 문자열 리스트를 넘기면 한번에 여러명에게 전송 가능)
+        helper.setTo(userEmail);
+        javaMailSender.send(message);
     }
 }

@@ -29,11 +29,11 @@ public class ConvertController {
 
     @PostMapping("/excel")
     @Operation(summary = "엑셀 다운로드", description = "특정 기간의 대여현황을 엑셀 파일로 변환하여 리턴")
-    public ResponseEntity<ByteArrayResource> ConvertToExelFile(@RequestParam LocalDate start, @RequestParam LocalDate end)
+    public ResponseEntity<ByteArrayResource> convertToExelFile(@RequestParam LocalDate start, @RequestParam LocalDate end)
         throws IOException {
         try {
             //엑셀 파일에 내용 세팅
-            XSSFWorkbook workbook = convertToExelFileService.ConvertToExelFile(start, end);
+            XSSFWorkbook workbook = convertToExelFileService.convertToExelFile(start, end);
 
             //파일 생성
             ByteArrayOutputStream outputStream = convertToExelFileService.makeExelFile(workbook);

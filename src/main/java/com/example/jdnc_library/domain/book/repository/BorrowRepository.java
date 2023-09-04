@@ -16,6 +16,7 @@ import java.util.Optional;
 @Repository
 public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
 
+    @EntityGraph(attributePaths = {"createdBy", "collectionInfo.bookInfo"})
     Optional<BorrowInfo> findById(long id);
     Optional<BorrowInfo> findByCollectionInfo_BookNumber(long bookNumber);
     Optional<BorrowInfo> findByCollectionInfo_BookNumberAndReturnDateIsNull(long bookNumber);
@@ -28,7 +29,4 @@ public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
     Page<BorrowInfo> findByCreatedAtBetweenOrAdminCheckIsFalse(LocalDateTime startOfMonth, LocalDateTime endOfMonth, Pageable pageable);
 
     List<BorrowInfo> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
-
-    @EntityGraph(attributePaths = {"createdBy", "collectionInfo.bookInfo"})
-    List<BorrowInfo> findAllByAdminCheckIsFalse();
 }
