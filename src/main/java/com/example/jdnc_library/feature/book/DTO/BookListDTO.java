@@ -1,5 +1,6 @@
 package com.example.jdnc_library.feature.book.DTO;
 
+import com.example.jdnc_library.domain.book.model.BookGroup;
 import com.example.jdnc_library.domain.book.model.BookInfo;
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,10 @@ public class BookListDTO {
 
     private boolean available;
 
+    private BookGroup bookGroup;
+
     public static BookListDTO of (BookInfo bookInfo, boolean available){
-        return new BookListDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getAuthor(), bookInfo.getPublisher(), available);
+        return new BookListDTO(bookInfo.getId(), bookInfo.getTitle(), bookInfo.getImage(), bookInfo.getAuthor(), bookInfo.getPublisher(), available, bookInfo.getBookGroup());
     }
 
     public static BookListDTO of (CollectionInfo collectionInfo){
@@ -35,6 +38,7 @@ public class BookListDTO {
         bookListDTO.setTitle(collectionInfo.getBookInfo().getTitle());
         bookListDTO.setAuthor(collectionInfo.getBookInfo().getAuthor());
         bookListDTO.setAvailable(collectionInfo.isAvailable());
+        bookListDTO.setBookGroup(collectionInfo.getBookInfo().getBookGroup());
         return bookListDTO;
     }
 }

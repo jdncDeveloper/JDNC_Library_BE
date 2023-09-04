@@ -39,6 +39,8 @@ public class BorrowListDTO {
 
     private String publisher;
 
+    private int state;
+
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime returnDate;
