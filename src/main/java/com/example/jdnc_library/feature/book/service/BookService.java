@@ -8,22 +8,22 @@ import com.example.jdnc_library.domain.book.repository.BookRepository;
 import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.exception.clienterror._400.BadRequestException;
+import com.example.jdnc_library.exception.clienterror._400.BookNonReturnException;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
 import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
+import com.example.jdnc_library.feature.book.repository.BorrowInfoQueryRepository;
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final CollectionRepository collectionRepository;
     private final BorrowRepository borrowRepository;
-
+    private final BorrowInfoQueryRepository borrowInfoQueryRepository;
 
     /**
      * 입력한 달에 빌린 책 리스트를 리턴(Admin)
@@ -39,32 +39,16 @@ public class BookService {
      * @param month
      * @return
      */
-    @Transactional
     public List<BorrowListDTO> searchBooksBorrowedInMonth(int year, int month, Pageable pageable) {
-        YearMonth yearMonth = YearMonth.of(year, month);
-        int lastDay = yearMonth.lengthOfMonth();
-
-        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0);
-        LocalDateTime endOfMonth = LocalDateTime.of(year, month, lastDay, 23, 59, 59);
-
-        List<BorrowInfo> returnedInMonth = borrowRepository.findByCreatedAtBetweenOrAdminCheckIsFalse(startOfMonth, endOfMonth, pageable).getContent();
-
-        return returnedInMonth.stream()
-                .map(BorrowListDTO::of)
-                .collect(Collectors.toList());
+        return borrowInfoQueryRepository.getBorrowListDTOOfReturnInMonth(year, month, pageable).getContent();
     }
 
     /**
      * 아직 미반납인 책 리스트를 리턴(Admin)
      * @return List<BorrowDTO>
      */
-    @Transactional
     public List<BorrowListDTO> searchNotCheckedBooks(Pageable pageable) {
-        List<BorrowInfo> notCheckedBorrows = borrowRepository.findByAdminCheckIsFalse(pageable).getContent();
-
-        return notCheckedBorrows.stream()
-                .map(BorrowListDTO::of)
-                .collect(Collectors.toList());
+        return borrowInfoQueryRepository.getBorrowListNonReturn(pageable).getContent();
     }
 
     /**
@@ -76,8 +60,9 @@ public class BookService {
     public void updateBook(long id, BookRequest bookRequest){
         BookInfo bookInfo = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, BookInfo.class));
 
-        bookInfo.update( bookRequest.getTitle(), bookRequest.getImage(), bookRequest.getContent(), bookRequest.getAuthor(), bookRequest.getPublisher(), BookGroup.valueOf(bookRequest.getBookGroup()));
+        bookInfo.update(bookRequest.getTitle(), bookRequest.getImage(), bookRequest.getContent(), bookRequest.getAuthor(), bookRequest.getPublisher(), BookGroup.valueOf(bookRequest.getBookGroup()));
     }
+
     // TODO : 책정보 추가 수정필요
     /**
      * 책 정보 추가(Admin)
@@ -113,14 +98,16 @@ public class BookService {
         Optional<CollectionInfo> existingCollection = collectionRepository.findByBookNumber(bookNumber);
 
         if(existingCollection.isPresent()){
-            throw new RuntimeException("이미 존재하는 책 정보입니다.");
+            throw new EntityExistsException();
         }
-        else {
-            Optional<BookInfo> book = bookRepository.findById(id);
-            BookInfo bookInfo =book.get();
-            CollectionInfo collectionInfo = new CollectionInfo(bookInfo, bookNumber);
-            collectionRepository.save(collectionInfo);
-        }
+
+        BookInfo bookInfo = bookRepository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException(id, BookInfo.class)
+        );
+
+        CollectionInfo collectionInfo = new CollectionInfo(bookInfo, bookNumber);
+        collectionRepository.save(collectionInfo);
+
     }
 
     /**
@@ -142,23 +129,20 @@ public class BookService {
      */
     @Transactional
     public void updateAdminCheck(Long id){
-        Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findById(id);
+        BorrowInfo borrowInfo = borrowRepository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException(id, BorrowInfo.class));
 
-        if (borrowInfoOptional.isPresent()) {
-            BorrowInfo borrowInfo = borrowInfoOptional.get();
-            if(borrowInfo.getReturnDate() != null){
-                borrowInfo.updateAdminCheck(true);
-                borrowRepository.save(borrowInfo);
+        if(borrowInfo.getReturnDate() != null){
+            borrowInfo.updateAdminCheck(true);
+            borrowRepository.save(borrowInfo);
 
-                CollectionInfo collectionInfo = borrowInfo.getCollectionInfo();
-                collectionInfo.updateAvailable(true);
-                collectionRepository.save(collectionInfo);
-            } else {
-                throw new BadRequestException();
-            }
+            CollectionInfo collectionInfo = borrowInfo.getCollectionInfo();
+            collectionInfo.updateAvailable(true);
+            collectionRepository.save(collectionInfo);
         } else {
-            throw new EntityNotFoundException(id, BookInfo.class);
+            throw new BookNonReturnException(id);
         }
+
     }
 
     /**
@@ -167,15 +151,11 @@ public class BookService {
      */
     @Transactional
     public void lostBook(Long bookNumber){
-        Optional<CollectionInfo> collectionInfoOptional = collectionRepository.findByBookNumber(bookNumber);
-        if(collectionInfoOptional.isPresent()){
-            CollectionInfo collectionInfo = collectionInfoOptional.get();
-            collectionInfo.lostBook(!collectionInfo.isLost());
-        }
-        else {
-            throw new EntityNotFoundException(bookNumber, CollectionInfo.class);
-        }
+        CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber).orElseThrow(
+                () -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
+        collectionInfo.lostBook(!collectionInfo.isLost());
     }
+
 
     private Long findIdNotInCollection(List<Long> ids, List<CollectionInfo> collectionInfos) {
         Set<Long> idSet = new HashSet<>(ids);
@@ -193,8 +173,9 @@ public class BookService {
      */
     @Transactional
     public void deleteCollection(Long id) {
-        Optional<CollectionInfo> collectionInfoOptional = collectionRepository.findById(id);
-        CollectionInfo collectionInfo = collectionInfoOptional.get();
+        CollectionInfo collectionInfo= collectionRepository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException(id, CollectionInfo.class)
+        );
         collectionRepository.delete(collectionInfo);
     }
 
@@ -204,8 +185,10 @@ public class BookService {
      */
     @Transactional
     public void deleteBook(Long id) {
-        Optional<BookInfo> bookInfoOptional = bookRepository.findById(id);
-        BookInfo bookInfo = bookInfoOptional.get();
+        BookInfo bookInfo = bookRepository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException(id, BookInfo.class)
+        );
+
         bookRepository.delete(bookInfo);
     }
 
