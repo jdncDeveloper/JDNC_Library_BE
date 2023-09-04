@@ -2,13 +2,11 @@ package com.example.jdnc_library.feature.mail.service;
 
 import com.example.jdnc_library.domain.book.model.BorrowInfo;
 import com.example.jdnc_library.domain.book.repository.BorrowRepository;
-import com.example.jdnc_library.domain.member.model.Member;
-import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
+import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
+import com.example.jdnc_library.security.model.PrincipalDetails;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,19 +18,22 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
+
     private final BorrowRepository borrowRepository;
+
     private final MemberRepository memberRepository;
+
     private final MakeMailTemplate makeMailTemplate;
 
     @Async
-    public void sendMail(long id) throws MessagingException {
+    public void sendMail(long id, PrincipalDetails principalDetails) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        Optional<BorrowInfo> borrowInfoOptional = borrowRepository.findById(id);
-        BorrowInfo borrowInfo = borrowInfoOptional.get();
-        List<Member> admin = memberRepository.findAllByRole(Role.ROLE_ADMIN);
-        String adminName = admin.get(0).getName();
+        BorrowInfo borrowInfo = borrowRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(id, BorrowInfo.class));
+
+        String adminName = principalDetails.getMember().getName();
 
         //제목, 내용 설정
         String title = makeMailTemplate.getMailTitle();

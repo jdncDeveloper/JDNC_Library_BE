@@ -33,4 +33,5 @@ public class MakeMailTemplate {
 
         return stringBuffer.toString();
     }
+
 }
