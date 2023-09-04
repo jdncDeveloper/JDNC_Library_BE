@@ -72,6 +72,7 @@ public class BookService {
      * @param id
      * @param bookRequest
      */
+    @Transactional
     public void updateBook(long id, BookRequest bookRequest){
         BookInfo bookInfo = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, BookInfo.class));
 
@@ -190,5 +191,26 @@ public class BookService {
         return null;
     }
 
+    /**
+     * 책 소장 정보 삭제
+     * @param id
+     */
+    @Transactional
+    public void deleteCollection(Long id) {
+        Optional<CollectionInfo> collectionInfoOptional = collectionRepository.findById(id);
+        CollectionInfo collectionInfo = collectionInfoOptional.get();
+        collectionRepository.delete(collectionInfo);
+    }
+
+    /**
+     * 책 정보 삭제
+     * @param id
+     */
+    @Transactional
+    public void deleteBook(Long id) {
+        Optional<BookInfo> bookInfoOptional = bookRepository.findById(id);
+        BookInfo bookInfo = bookInfoOptional.get();
+        bookRepository.delete(bookInfo);
+    }
 
 }

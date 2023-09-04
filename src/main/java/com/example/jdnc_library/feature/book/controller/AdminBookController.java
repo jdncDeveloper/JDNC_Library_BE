@@ -46,6 +46,13 @@ public class AdminBookController {
         bookService.updateBook(id, bookRequest);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBook(
+            @PathVariable @Positive Long id){
+        bookService.deleteBook(id);
+    }
+
 
     /**
      * 월간 대출 기록

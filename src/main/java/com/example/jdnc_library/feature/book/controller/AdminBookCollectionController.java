@@ -6,13 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Secured({"ROLE_ADMIN","ROLE_BOOKKEEPER"})
@@ -25,7 +19,7 @@ public class AdminBookCollectionController {
     /**
      * 책 고유번호 추가
      * @param bookNumber
-     * @param id
+     * @param bookId
      */
     //TODO: 프론트엔드 알림
     @PostMapping
@@ -34,6 +28,13 @@ public class AdminBookCollectionController {
         @RequestParam(value = "bookNumber") @Positive long bookNumber,
         @RequestParam(value = "bookId") @Positive long bookId){
         bookService.addBookNumber(bookNumber,bookId);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCollection(
+            @PathVariable @Positive Long id){
+        bookService.deleteCollection(id);
     }
 
     /**
