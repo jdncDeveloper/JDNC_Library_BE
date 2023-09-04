@@ -10,7 +10,7 @@ public class BookGroupJpaConverter implements AttributeConverter<BookGroup, Stri
     @Override
     public String convertToDatabaseColumn(BookGroup attribute) {
         if (attribute == null) return null;
-        return attribute.getValue();
+        return attribute.name();
     }
 
     @Override
