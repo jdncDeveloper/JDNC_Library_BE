@@ -24,12 +24,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public PagedMemberDTO getMemberList(int page) {
-        int ontPageSize = 15;
-        Pageable pageable = PageRequest.of(0, ontPageSize);;
+        int onePageSize = 10;
+        Pageable pageable = PageRequest.of(0, onePageSize);;
         int totalPage = memberRepository.findAll(pageable).getTotalPages();
 
         if(page < 1 || page > totalPage) throw new BadRequestException("옳지 못한 page 번호입니다");
-        pageable = PageRequest.of(page - 1, ontPageSize);
+        pageable = PageRequest.of(page - 1, onePageSize);
         Page<Member> memberList = memberRepository.findAll(pageable);
 
         List<MemberDTO> list = new ArrayList<>();
