@@ -1,6 +1,8 @@
 package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.feature.book.DTO.AdminRequest;
+import com.example.jdnc_library.feature.book.DTO.BookNumberRequest;
+import com.example.jdnc_library.feature.book.DTO.CreateCollectionDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +20,14 @@ public class AdminBookCollectionController {
 
     /**
      * 책 고유번호 추가
-     * @param bookNumber
-     * @param bookId
+     * @param createCollectionDTO
      */
     //TODO: 프론트엔드 알림
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createCollection(
-        @RequestParam(value = "bookNumber") @Positive long bookNumber,
-        @RequestParam(value = "bookId") @Positive long bookId){
-        bookService.addBookNumber(bookNumber,bookId);
+            @RequestBody CreateCollectionDTO createCollectionDTO){
+        bookService.addBookNumber(createCollectionDTO.getBookNumber(),createCollectionDTO.getBookId());
     }
 
     @DeleteMapping("/{id}")
@@ -57,7 +57,7 @@ public class AdminBookCollectionController {
     @PutMapping("/lost")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void lostBook(
-        @RequestParam @Positive Long bookNumber){
-        bookService.lostBook(bookNumber);
+            @RequestBody BookNumberRequest bookNumberRequest){
+        bookService.lostBook(bookNumberRequest.getBookNumber());
     }
 }

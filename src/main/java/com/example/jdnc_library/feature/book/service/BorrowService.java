@@ -8,6 +8,7 @@ import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.exception.clienterror._400.LimitOutBookBorrowSizeException;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
 import com.example.jdnc_library.exception.clienterror._400.ExistEntityException;
+import com.example.jdnc_library.feature.book.DTO.BookNumberRequest;
 import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import com.example.jdnc_library.feature.book.repository.BorrowInfoQueryRepository;
@@ -42,19 +43,19 @@ public class BorrowService {
 
     /**
      * 책을 빌릴 때 데이터베이스에 저장
-     * @param bookNumber
+     * @param bookNumberRequest
      */
     @Transactional
-    public void borrowBook(long bookNumber, Member member){
+    public void borrowBook(BookNumberRequest bookNumberRequest, Member member){
 
         if (!isBorrowBook(member)) throw new LimitOutBookBorrowSizeException(member.getId());
 
-        if (borrowInfoQueryRepository.isExistNonReturnBorrowInfo(bookNumber)){
+        if (borrowInfoQueryRepository.isExistNonReturnBorrowInfo(bookNumberRequest.getBookNumber())){
             throw new ExistEntityException();
         }
 
-        CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumber)
-            .orElseThrow(() -> new EntityNotFoundException(bookNumber, CollectionInfo.class));
+        CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumberRequest.getBookNumber())
+            .orElseThrow(() -> new EntityNotFoundException(bookNumberRequest.getBookNumber(), CollectionInfo.class));
 
         BorrowInfo borrowInfo = new BorrowInfo(collectionInfo);
         borrowRepository.save(borrowInfo);

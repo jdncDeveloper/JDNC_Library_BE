@@ -18,7 +18,7 @@ public class CollectionInfo extends WriterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private BookInfo bookInfo;
 
     @Column(unique = true, nullable = false)

@@ -18,7 +18,7 @@ public class BorrowInfo extends WriterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private CollectionInfo collectionInfo;
 
     @Column
@@ -28,17 +28,18 @@ public class BorrowInfo extends WriterEntity {
     private LocalDateTime returnDate;
 
     @Column
-    private Integer state;
+    private Integer floor;
 
     public BorrowInfo(CollectionInfo collectionInfo){
         this.collectionInfo = collectionInfo;
         this.adminCheck = false;
         this.returnDate = null;
+        this.floor = null;
     }
 
-    public void returnBook(LocalDateTime returnDate, int state){
+    public void returnBook(LocalDateTime returnDate, Integer floor){
         this.returnDate = returnDate;
-        this.state = state;
+        this.floor = floor;
     }
 
     public void updateAdminCheck(boolean newAdminCheck) {
