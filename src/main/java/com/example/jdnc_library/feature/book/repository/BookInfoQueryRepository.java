@@ -30,7 +30,8 @@ public class BookInfoQueryRepository extends Querydsl4RepositorySupport {
                 bookInfo.image,
                 bookInfo.author,
                 bookInfo.publisher,
-                collectionInfo.available
+                collectionInfo.available,
+                bookInfo.bookGroup
             ))
             .from(bookInfo)
             .leftJoin(collectionInfo).on(bookInfo.id.eq(collectionInfo.bookInfo.id)

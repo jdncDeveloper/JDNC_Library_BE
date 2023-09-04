@@ -34,7 +34,8 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
                 bookInfo.title,
                 bookInfo.author,
                 bookInfo.publisher,
-                borrowInfo.returnDate)
+                borrowInfo.returnDate,
+                borrowInfo.state)
         ).from(borrowInfo)
             .join(borrowInfo.collectionInfo, collectionInfo)
             .join(collectionInfo.bookInfo, bookInfo)
