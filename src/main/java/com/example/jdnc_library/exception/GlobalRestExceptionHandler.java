@@ -7,6 +7,8 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,7 +41,7 @@ public class GlobalRestExceptionHandler {
                 messageList.add(message.getDefaultMessage());
             }
         }catch (Exception e) {
-           messageList.add("요청이 옳지 않습니다.");
+            messageList.add("요청이 옳지 않습니다.");
         }
 
         return new ResponseError<List<String>>(messageList);
@@ -60,6 +62,18 @@ public class GlobalRestExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseError<String> handleForbidden(ForbiddenException ex) {
+        return new ResponseError<String> (ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseError<String> handleAuthentication(AuthenticationException ex) {
+        return new ResponseError<String> (ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseError<String> handleAccessDenied(AccessDeniedException ex) {
         return new ResponseError<String> (ex.getMessage());
     }
 
