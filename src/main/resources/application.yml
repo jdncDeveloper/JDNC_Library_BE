@@ -28,6 +28,14 @@ init:
     username: admin
     password: test1234
 
+cloud:
+  aws:
+    s3:
+      bucket: jdnclib-s3
+    stack.auto: false
+    region.static: ap-northeast-2
+
+
 management:
   endpoints:
     web:
