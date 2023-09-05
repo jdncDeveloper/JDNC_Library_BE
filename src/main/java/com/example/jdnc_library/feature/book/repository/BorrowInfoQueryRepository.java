@@ -86,7 +86,7 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
 
         JPAQuery<BorrowListDTO> jpaQuery =
             select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(borrowInfo)
-                .join(member, borrowInfo.createdBy)
+                .join(borrowInfo.createdBy, member)
                 .join(borrowInfo.collectionInfo, collectionInfo)
                 .join(collectionInfo.bookInfo, bookInfo)
                 .where(borrowInfo.returnDate.between(startOfMonth, endOfMonth)
@@ -98,7 +98,7 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
     public Page<BorrowListDTO> getBorrowListNonReturn(Pageable pageable) {
         JPAQuery<BorrowListDTO> jpaQuery =
             select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(borrowInfo)
-                .join(member, borrowInfo.createdBy)
+                .join(borrowInfo.createdBy, member)
                 .join(borrowInfo.collectionInfo, collectionInfo)
                 .join(collectionInfo.bookInfo, bookInfo)
                 .where(borrowInfo.adminCheck.isFalse());
