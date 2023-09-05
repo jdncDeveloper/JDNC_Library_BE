@@ -7,7 +7,7 @@ import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.exception.clienterror._400.LimitOutBookBorrowSizeException;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
-import com.example.jdnc_library.exception.clienterror._400.ExistEntityException;
+import com.example.jdnc_library.exception.clienterror._400.EntityExistsException;
 import com.example.jdnc_library.feature.book.DTO.BookNumberRequest;
 import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
@@ -51,7 +51,7 @@ public class BorrowService {
         if (!isBorrowBook(member)) throw new LimitOutBookBorrowSizeException(member.getId());
 
         if (borrowInfoQueryRepository.isExistNonReturnBorrowInfo(bookNumberRequest.getBookNumber())){
-            throw new ExistEntityException();
+            throw new EntityExistsException();
         }
 
         CollectionInfo collectionInfo = collectionRepository.findByBookNumber(bookNumberRequest.getBookNumber())
