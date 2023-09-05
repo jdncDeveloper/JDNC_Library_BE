@@ -28,4 +28,8 @@ public interface CollectionRepository extends JpaRepository<CollectionInfo, Long
 
     @EntityGraph(attributePaths = {"bookInfo"})
     List<CollectionInfo> findAll();
+
+    int countByAvailableTrue();
+
+    int countByLostIsFalse();
 }

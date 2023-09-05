@@ -2,6 +2,7 @@ package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.domain.ResponseData;
 import com.example.jdnc_library.domain.book.model.BookGroup;
+import com.example.jdnc_library.feature.book.DTO.CountDTO;
 import com.example.jdnc_library.feature.book.DTO.BookDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BookListDTO;
 import com.example.jdnc_library.feature.book.service.SearchService;
@@ -40,5 +41,17 @@ public class BookController {
         BookDetailDTO bookDetailDTO = searchService.getBookById(id);
 
         return new ResponseData<>(bookDetailDTO);
+    }
+
+    @GetMapping("/available")
+    @ResponseStatus(HttpStatus.OK)
+    public CountDTO getAvailableCount(){
+        return searchService.getAvailableCount();
+    }
+
+    @GetMapping("/collection")
+    @ResponseStatus(HttpStatus.OK)
+    public CountDTO getCollectionCount(){
+        return searchService.getCollectionCount();
     }
 }
