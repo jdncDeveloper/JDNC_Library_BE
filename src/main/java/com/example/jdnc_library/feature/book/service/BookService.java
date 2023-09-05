@@ -7,14 +7,13 @@ import com.example.jdnc_library.domain.book.model.CollectionInfo;
 import com.example.jdnc_library.domain.book.repository.BookRepository;
 import com.example.jdnc_library.domain.book.repository.BorrowRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
-import com.example.jdnc_library.exception.clienterror._400.BadRequestException;
 import com.example.jdnc_library.exception.clienterror._400.BookNonReturnException;
+import com.example.jdnc_library.exception.clienterror._400.EntityExistsException;
 import com.example.jdnc_library.exception.clienterror._400.EntityNotFoundException;
 import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookRequest;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import com.example.jdnc_library.feature.book.repository.BorrowInfoQueryRepository;
-import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -93,12 +92,12 @@ public class BookService {
      * @param id
      * @exception CollectionInfo 존재할 경우
      */
-    //Todo: ???? bookNumber를 프론트엔드 한태서 받음?
+    @Transactional
     public void addBookNumber(long bookNumber, long id){
         Optional<CollectionInfo> existingCollection = collectionRepository.findByBookNumber(bookNumber);
 
         if(existingCollection.isPresent()){
-            throw new EntityExistsException();
+            throw new EntityExistsException(id, CollectionInfo.class);
         }
 
         BookInfo bookInfo = bookRepository.findById(id).orElseThrow(
