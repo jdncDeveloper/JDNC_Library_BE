@@ -32,6 +32,12 @@ jwt:
   access: ${secret_jwt_access}
   refresh: ${secret_jwt_refresh}
 
+cloud:
+  aws:
+    credentials:
+      accessKey: ${secret_aws_access}
+      secretKey: ${secret_aws_secret}
+
 springdoc:
   api-docs:
     enabled: true
