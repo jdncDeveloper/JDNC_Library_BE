@@ -30,6 +30,9 @@ public class ConvertToExelFileService {
     private final CollectionRepository collectionRepository;
     @Transactional
     public XSSFWorkbook convertToExelFile(LocalDate start, LocalDate end) throws IOException {
+
+        Cell[] cells = new Cell[7];
+
         try {
             //엑셀 파일을 가져옵니다
             String filePath = "src/main/resources/template.xlsm";
@@ -40,7 +43,7 @@ public class ConvertToExelFileService {
             //도서 리스트를 가져옵니다
             List<CollectionInfo> collections = collectionRepository.findAll();
 
-            //도서 리스트 입력
+            //엑셀에 도서 리스트 입력
             int[] rowCount = new int[6];
             int index = 0;
 
@@ -78,16 +81,16 @@ public class ConvertToExelFileService {
                 Row row = nowSheet.getRow(2 + rowCount[index]);
 
                 rowCount[index]++;
-                Cell cellBookNum = row.getCell(0);
-                Cell cellBookTitle = row.getCell(1);
-                cellBookNum.setCellValue(collections.get(i).getBookNumber());
-                cellBookTitle.setCellValue(collections.get(i).getBookInfo().getTitle());
+                cells[0] = row.getCell(0);
+                cells[1] = row.getCell(1);
+                cells[0].setCellValue(collections.get(i).getBookNumber());
+                cells[1].setCellValue(collections.get(i).getBookInfo().getTitle());
                 if (collections.get(i).isLost()) { //소실된 책 처리
                     rowCount[5]++;
-                    cellBookNum = lostRow.getCell(0);
-                    cellBookTitle = lostRow.getCell(1);
-                    cellBookNum.setCellValue(collections.get(i).getBookNumber());
-                    cellBookTitle.setCellValue(collections.get(i).getBookInfo().getTitle());
+                    cells[0] = lostRow.getCell(0);
+                    cells[1] = lostRow.getCell(1);
+                    cells[0].setCellValue(collections.get(i).getBookNumber());
+                    cells[1].setCellValue(collections.get(i).getBookInfo().getTitle());
                 }
             }
 
@@ -97,51 +100,41 @@ public class ConvertToExelFileService {
             List<BorrowInfo> borrowInfoList = borrowRepository.findAllByCreatedAtBetween(startDate,
                 endDate);
 
-            //대여 현황 입력
+            //엑셀에 대여 현황 입력
             Sheet current = workbook.getSheetAt(0);
             Sheet record = workbook.getSheetAt(6);
             Row currentRow;
             Row recordRow;
             int currentIndex = 4;
             int recordIndex = 4;
-            Cell cell1st;
-            Cell cell2nd;
-            Cell cell3rd;
-            Cell cell4th;
-            Cell cell5th;
             for (int i = 0; i < borrowInfoList.size(); i++) {
                 if(borrowInfoList.get(i).isAdminCheck()) { // 반납 최종 확인 된 경우
                     recordRow = record.getRow(recordIndex);
 
-                    cell1st = recordRow.getCell(0);
-                    cell2nd = recordRow.getCell(1);
-                    cell3rd = recordRow.getCell(2);
-                    cell4th = recordRow.getCell(3);
-                    cell5th = recordRow.getCell(4);
-                    Cell cell6th = recordRow.getCell(5);
-                    Cell cell7th = recordRow.getCell(6);
+                    for(int j = 0; j < cells.length; j++) {
+                        cells[j] = recordRow.getCell(j);
+                    }
 
-                    cell6th.setCellValue(borrowInfoList.get(i).getReturnDate());
+                    cells[5].setCellValue(borrowInfoList.get(i).getReturnDate());
+                    cells[6].setCellValue(borrowInfoList.get(i).getFloor());
 
                     recordIndex++;
-                } else { //아직 반납 최정 확인아 안된경우
+                } else { // 반납 최종 확인이 안된경우
                     currentRow = current.getRow(currentIndex);
 
-                    cell1st = currentRow.getCell(0);
-                    cell2nd = currentRow.getCell(1);
-                    cell3rd = currentRow.getCell(2);
-                    cell4th = currentRow.getCell(3);
-                    cell5th = currentRow.getCell(4);
+                    for(int j = 0; j < 5; j++) {
+                        cells[j] = currentRow.getCell(j);
+                    }
 
                     currentIndex++;
                 }
 
-                cell1st.setCellValue(borrowInfoList.get(i).getCollectionInfo().getBookNumber());
-                cell2nd.setCellValue(
+                cells[0].setCellValue(borrowInfoList.get(i).getCollectionInfo().getBookNumber());
+                cells[1].setCellValue(
                     borrowInfoList.get(i).getCollectionInfo().getBookInfo().getTitle());
-                cell3rd.setCellValue(borrowInfoList.get(i).getCreatedBy().getUsername());
-                cell4th.setCellValue(borrowInfoList.get(i).getCreatedBy().getName());
-                cell5th.setCellValue(borrowInfoList.get(i).getCreatedAt());
+                cells[2].setCellValue(borrowInfoList.get(i).getCreatedBy().getUsername());
+                cells[3].setCellValue(borrowInfoList.get(i).getCreatedBy().getName());
+                cells[4].setCellValue(borrowInfoList.get(i).getCreatedAt());
             }
 
             fileInputStream.close();

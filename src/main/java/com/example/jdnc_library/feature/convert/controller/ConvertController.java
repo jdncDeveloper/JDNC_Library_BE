@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/management")
+@RequestMapping("/excel")
 public class ConvertController {
 
     private final ConvertToExelFileService convertToExelFileService;
     private final BookRepository bookRepository;
     private final CollectionRepository collectionRepository;
 
-    @PostMapping("/excel")
+    @PostMapping
     @Operation(summary = "엑셀 다운로드", description = "특정 기간의 대여현황을 엑셀 파일로 변환하여 리턴")
     public ResponseEntity<ByteArrayResource> convertToExelFile(@RequestParam LocalDate start, @RequestParam LocalDate end)
         throws IOException {
