@@ -1,6 +1,7 @@
 package com.example.jdnc_library.feature.book.repository;
 
 import static com.example.jdnc_library.domain.book.model.QBookInfo.bookInfo;
+import static com.example.jdnc_library.domain.book.model.QBorrowInfo.borrowInfo;
 import static com.example.jdnc_library.domain.book.model.QCollectionInfo.collectionInfo;
 
 import com.example.jdnc_library.domain.book.model.BookGroup;
@@ -37,7 +38,9 @@ public class BookInfoQueryRepository extends Querydsl4RepositorySupport {
             .leftJoin(collectionInfo).on(bookInfo.id.eq(collectionInfo.bookInfo.id)
                 .and(collectionInfo.available.isTrue())
             )
-            .where(Querydsl4ExpressionUtil.contains(bookInfo.title, title))
+            .where(Querydsl4ExpressionUtil.contains(bookInfo.title, title)
+                .and(collectionInfo.deletedAt.isNull())
+                .and(bookInfo.deletedAt.isNull()))
             .groupBy(bookInfo.id);
 
         //collectionInfo.available = 이미 left join에서 필터링햇기때문에 해당 컬럼을 조회 하는 건 문제가 없다
