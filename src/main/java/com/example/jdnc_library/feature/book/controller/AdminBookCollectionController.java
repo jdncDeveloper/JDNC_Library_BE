@@ -2,8 +2,10 @@ package com.example.jdnc_library.feature.book.controller;
 
 import com.example.jdnc_library.feature.book.DTO.AdminRequest;
 import com.example.jdnc_library.feature.book.DTO.BookNumberRequest;
+import com.example.jdnc_library.feature.book.DTO.CountDTO;
 import com.example.jdnc_library.feature.book.DTO.CreateCollectionDTO;
 import com.example.jdnc_library.feature.book.service.BookService;
+import com.example.jdnc_library.feature.book.service.BorrowService;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +19,12 @@ import org.springframework.web.bind.annotation.*;
 public class AdminBookCollectionController {
 
     private final BookService bookService;
+    private final BorrowService borrowService;
 
     /**
      * 책 고유번호 추가
      * @param createCollectionDTO
      */
-    //TODO: 프론트엔드 알림
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createCollection(
@@ -30,11 +32,27 @@ public class AdminBookCollectionController {
         bookService.addBookNumber(createCollectionDTO.getBookNumber(),createCollectionDTO.getBookId());
     }
 
+    /**
+     * 책 번호 삭제 (사용불가)
+     * @param id
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCollection(
             @PathVariable @Positive Long id){
         bookService.deleteCollection(id);
+    }
+
+    @GetMapping("/notchecked")
+    @ResponseStatus(HttpStatus.OK)
+    public CountDTO getNotCheckedCount(){
+        return borrowService.getNotChecked();
+    }
+
+    @GetMapping("/returned")
+    @ResponseStatus(HttpStatus.OK)
+    public CountDTO getReturnedCount(){
+        return borrowService.getReturned();
     }
 
     /**
@@ -52,7 +70,7 @@ public class AdminBookCollectionController {
 
     /**
      * 소실 처리
-     * @param bookNumber
+     * @param bookNumberRequest
      */
     @PutMapping("/lost")
     @ResponseStatus(HttpStatus.NO_CONTENT)
