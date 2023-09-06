@@ -42,6 +42,8 @@ public class BorrowListDTO {
 
     private Integer floor;
 
+    private boolean adminCheck;
+
     @JsonProperty("borrowDate")
     public String getBorrowDate() {
         if (borrowDate != null) {
@@ -70,6 +72,7 @@ public class BorrowListDTO {
         borrowListDTO.setPublisher(borrowInfo.getCollectionInfo().getBookInfo().getPublisher());
         borrowListDTO.setReturnDate(borrowInfo.getReturnDate());
         borrowListDTO.setFloor(borrowInfo.getFloor());
+        borrowListDTO.setAdminCheck(borrowInfo.isAdminCheck());
         return borrowListDTO;
     }
 }

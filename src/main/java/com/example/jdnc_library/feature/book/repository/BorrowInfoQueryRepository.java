@@ -43,7 +43,8 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
             bookInfo1.author,
             bookInfo1.publisher,
             borrowInfo1.returnDate,
-            borrowInfo1.floor);
+            borrowInfo1.floor,
+            borrowInfo1.adminCheck);
     }
 
     private JPAQuery<BorrowListDTO> getNotYetReturnListQuery(Long memberId) {
