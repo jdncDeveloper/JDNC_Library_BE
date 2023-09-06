@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,7 +31,7 @@ public class ConvertToExelFileService {
     private final BorrowRepository borrowRepository;
     private final CollectionRepository collectionRepository;
     @Transactional
-    public XSSFWorkbook convertToExelFile(LocalDate start, LocalDate end) throws IOException {
+    public XSSFWorkbook convertToExelFile(int year, int month) throws IOException {
 
         Cell[] cells = new Cell[7];
 
@@ -95,8 +97,10 @@ public class ConvertToExelFileService {
             }
 
             //대여 현황 리스트를 가져옵니다
-            LocalDateTime startDate = start.atStartOfDay();
-            LocalDateTime endDate = end.atTime(23, 59, 59);
+            Month currentMonth = Month.of(month);
+            YearMonth yearMonth = YearMonth.of(year, currentMonth);
+            LocalDateTime startDate = LocalDateTime.of(year, currentMonth, 1, 0, 0);
+            LocalDateTime endDate = LocalDateTime.of(year, currentMonth, yearMonth.lengthOfMonth(), 23, 59, 59);
             List<BorrowInfo> borrowInfoList = borrowRepository.findAllByCreatedAtBetween(startDate,
                 endDate);
 
@@ -142,7 +146,7 @@ public class ConvertToExelFileService {
             return workbook;
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -162,10 +166,10 @@ public class ConvertToExelFileService {
         }
     }
 
-    public String makeFileName(LocalDate start, LocalDate end) {
+    public String makeFileName(int year, int month) {
         //파일이름 생성
         String fileName = "";
-        fileName = start + " ~ " + end + "_LIB.xlsm";
+        fileName = year + "_" + month + "_LIB.xlsm";
         System.out.println(fileName);
 
         return fileName;
