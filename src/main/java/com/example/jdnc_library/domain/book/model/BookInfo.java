@@ -7,11 +7,15 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "update book_info set deleted_at = now() where id = ?")
+@Where(clause = "deleted_at is null")
 public class BookInfo extends WriterEntity {
 
     @Id

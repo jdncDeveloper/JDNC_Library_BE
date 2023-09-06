@@ -7,11 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "update borrow_info set deleted_at = now() where id = ?")
+@Where(clause = "deleted_at is null")
 public class BorrowInfo extends WriterEntity {
 
     @Id
