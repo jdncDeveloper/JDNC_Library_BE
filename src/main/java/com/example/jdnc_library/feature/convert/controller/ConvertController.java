@@ -13,6 +13,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,20 +28,20 @@ public class ConvertController {
     private final BookRepository bookRepository;
     private final CollectionRepository collectionRepository;
 
-    @PostMapping
+    @GetMapping
     @Operation(summary = "엑셀 다운로드", description = "특정 기간의 대여현황을 엑셀 파일로 변환하여 리턴")
-    public ResponseEntity<ByteArrayResource> convertToExelFile(@RequestParam LocalDate start, @RequestParam LocalDate end)
+    public ResponseEntity<ByteArrayResource> convertToExelFile(@RequestParam int year, @RequestParam int month)
         throws IOException {
         try {
             //엑셀 파일에 내용 세팅
-            XSSFWorkbook workbook = convertToExelFileService.convertToExelFile(start, end);
+            XSSFWorkbook workbook = convertToExelFileService.convertToExelFile(year, month);
 
             //파일 생성
             ByteArrayOutputStream outputStream = convertToExelFileService.makeExelFile(workbook);
             ByteArrayResource resource = convertToExelFileService.getResource(outputStream);
 
             //파일 이름 생성
-            String fileName = convertToExelFileService.makeFileName(start, end);
+            String fileName = convertToExelFileService.makeFileName(year, month);
 
             // 파일 다운로드 응답
             HttpHeaders headers = new HttpHeaders();
