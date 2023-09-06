@@ -29,4 +29,8 @@ public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
     Page<BorrowInfo> findByCreatedAtBetweenOrAdminCheckIsFalse(LocalDateTime startOfMonth, LocalDateTime endOfMonth, Pageable pageable);
 
     List<BorrowInfo> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    int countByAdminCheckIsFalse();
+
+    int countByAdminCheckIsFalseAndReturnDateIsNotNull();
 }

@@ -11,6 +11,7 @@ import com.example.jdnc_library.exception.clienterror._400.EntityExistsException
 import com.example.jdnc_library.feature.book.DTO.BookNumberRequest;
 import com.example.jdnc_library.feature.book.DTO.CollectionDetailDTO;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
+import com.example.jdnc_library.feature.book.DTO.CountDTO;
 import com.example.jdnc_library.feature.book.repository.BorrowInfoQueryRepository;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
@@ -88,4 +89,11 @@ public class BorrowService {
         return borrowInfoQueryRepository.getNotYetReturnBookListSize(member.getId()) < LIMIT_BOOK_BORROW_COUNT;
     }
 
+    public CountDTO getNotChecked(){
+        return new CountDTO(borrowRepository.countByAdminCheckIsFalse());
+    }
+
+    public CountDTO getReturned(){
+        return new CountDTO(borrowRepository.countByAdminCheckIsFalseAndReturnDateIsNotNull());
+    }
 }
