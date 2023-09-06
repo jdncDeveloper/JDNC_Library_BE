@@ -1,9 +1,9 @@
 package com.example.jdnc_library.feature.book.repository;
 
-import static com.example.jdnc_library.domain.book.model.QBorrowInfo.borrowInfo;
-import static com.example.jdnc_library.domain.member.model.QMember.member;
-import static com.example.jdnc_library.domain.book.model.QCollectionInfo.collectionInfo;
 import static com.example.jdnc_library.domain.book.model.QBookInfo.bookInfo;
+import static com.example.jdnc_library.domain.book.model.QBorrowInfo.borrowInfo;
+import static com.example.jdnc_library.domain.book.model.QCollectionInfo.collectionInfo;
+import static com.example.jdnc_library.domain.member.model.QMember.member;
 
 import com.example.jdnc_library.domain.book.model.BorrowInfo;
 import com.example.jdnc_library.domain.book.model.QBookInfo;
@@ -13,6 +13,7 @@ import com.example.jdnc_library.domain.member.model.QMember;
 import com.example.jdnc_library.feature.book.DTO.BorrowListDTO;
 import com.example.jdnc_library.util.Querydsl4RepositorySupport;
 import com.querydsl.core.types.ConstructorExpression;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import java.time.LocalDateTime;
@@ -30,7 +31,8 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
     }
 
     private ConstructorExpression<BorrowListDTO> getProjectionsBorrowList
-        (QMember member1, QBorrowInfo borrowInfo1, QCollectionInfo collectionInfo1, QBookInfo bookInfo1) {
+        (QMember member1, QBorrowInfo borrowInfo1, QCollectionInfo collectionInfo1,
+            QBookInfo bookInfo1) {
 
         return Projections.constructor(
             BorrowListDTO.class,
@@ -47,12 +49,16 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
     }
 
     private JPAQuery<BorrowListDTO> getNotYetReturnListQuery(Long memberId) {
-        return select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(borrowInfo)
+        return select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(
+                borrowInfo)
             .join(borrowInfo.collectionInfo, collectionInfo)
             .join(collectionInfo.bookInfo, bookInfo)
             .join(borrowInfo.createdBy, member)
             .where(member.id.eq(memberId)
-                .and(borrowInfo.returnDate.isNull()));
+                .and(borrowInfo.returnDate.isNull())
+                .and(borrowInfo.deletedAt.isNull())
+                .and(collectionInfo.deletedAt.isNull())
+                .and(bookInfo.deletedAt.isNull()));
     }
 
     public Page<BorrowListDTO> getNotYetReturnBookList(Long memberId, Pageable pageable) {
@@ -68,7 +74,10 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
         BorrowInfo borrowInfo1 = selectFrom(borrowInfo)
             .join(borrowInfo.collectionInfo, collectionInfo)
             .where(collectionInfo.bookNumber.eq(bookNumber)
-                .and(borrowInfo.returnDate.isNull())).fetchJoin().fetchOne();
+                .and(borrowInfo.returnDate.isNull())
+                .and(borrowInfo.deletedAt.isNull())
+                .and(collectionInfo.deletedAt.isNull())
+                .and(bookInfo.deletedAt.isNull())).fetchJoin().fetchOne();
 
         return Optional.ofNullable(borrowInfo1);
     }
@@ -77,7 +86,8 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
         return getNonReturnBorrowInfo(bookNumber).isPresent();
     }
 
-    public Page<BorrowListDTO> getBorrowListDTOOfReturnInMonth(int year, int month, Pageable pageable) {
+    public Page<BorrowListDTO> getBorrowListDTOOfReturnInMonth(int year, int month,
+        Pageable pageable) {
         YearMonth yearMonth = YearMonth.of(year, month);
         int lastDay = yearMonth.lengthOfMonth();
 
@@ -85,23 +95,32 @@ public class BorrowInfoQueryRepository extends Querydsl4RepositorySupport {
         LocalDateTime endOfMonth = LocalDateTime.of(year, month, lastDay, 23, 59, 59);
 
         JPAQuery<BorrowListDTO> jpaQuery =
-            select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(borrowInfo)
+            select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(
+                    borrowInfo)
                 .join(borrowInfo.createdBy, member)
                 .join(borrowInfo.collectionInfo, collectionInfo)
                 .join(collectionInfo.bookInfo, bookInfo)
-                .where(borrowInfo.returnDate.between(startOfMonth, endOfMonth)
-                    .or(borrowInfo.adminCheck.isFalse()));
+                .where(borrowInfo.deletedAt.isNull()
+                    .and(collectionInfo.deletedAt.isNull())
+                    .and(bookInfo.deletedAt.isNull())
+                    .and(ExpressionUtils.or(
+                        borrowInfo.returnDate.between(startOfMonth, endOfMonth),
+                        borrowInfo.adminCheck.isFalse())));
 
         return applyPagination(pageable, jpaQuery);
     }
 
     public Page<BorrowListDTO> getBorrowListNonReturn(Pageable pageable) {
         JPAQuery<BorrowListDTO> jpaQuery =
-            select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(borrowInfo)
+            select(getProjectionsBorrowList(member, borrowInfo, collectionInfo, bookInfo)).from(
+                    borrowInfo)
                 .join(borrowInfo.createdBy, member)
                 .join(borrowInfo.collectionInfo, collectionInfo)
                 .join(collectionInfo.bookInfo, bookInfo)
-                .where(borrowInfo.adminCheck.isFalse());
+                .where(borrowInfo.adminCheck.isFalse()
+                    .and(borrowInfo.deletedAt.isNull())
+                    .and(collectionInfo.deletedAt.isNull())
+                    .and(bookInfo.deletedAt.isNull()));
 
         return applyPagination(pageable, jpaQuery);
     }

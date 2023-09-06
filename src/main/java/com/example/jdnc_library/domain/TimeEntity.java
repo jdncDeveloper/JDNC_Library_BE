@@ -21,4 +21,6 @@ public class TimeEntity {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    private LocalDateTime deletedAt;
+
 }
