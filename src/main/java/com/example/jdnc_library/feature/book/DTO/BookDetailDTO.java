@@ -32,7 +32,7 @@ public class BookDetailDTO {
 
     private boolean available;
 
-    private List<Long> bookNumbers;
+    private List<BookAvailableDTO> availableList;
 
     public static BookDetailDTO of(BookInfo bookInfo) {
         List<CollectionInfo> collectionInfos = bookInfo.getCollectionInfos();
@@ -55,7 +55,7 @@ public class BookDetailDTO {
             bookInfo.getPublisher(),
             bookInfo.getBookGroup(),
             flag,
-            collectionInfos.stream().map((CollectionInfo::getId)).toList()
+            collectionInfos.stream().map((BookAvailableDTO::new)).toList()
         );
     }
 
