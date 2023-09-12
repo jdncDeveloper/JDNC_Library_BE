@@ -44,6 +44,14 @@ public class BookInfo extends WriterEntity {
     @OneToMany(mappedBy = "bookInfo")
     private List<CollectionInfo> collectionInfos;
 
+    public BookInfo (String title, BookGroup bookGroup) {
+        this.title = title;
+        this.bookGroup = bookGroup;
+        this.author = "미입력";
+        this.publisher = "미입력";
+
+    }
+
     public void update(String title, String image, String content, String author, String publisher, BookGroup bookGroup){
         this.title = title;
         this.image = image;

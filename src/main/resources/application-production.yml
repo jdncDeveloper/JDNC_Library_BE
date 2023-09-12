@@ -46,3 +46,8 @@ springdoc:
     tagsSorter: alpha
     operations-sorter: alpha
     display-request-duration: true
+
+init:
+  admin:
+    username: ${admin.username}
+    password: ${admin.password}
