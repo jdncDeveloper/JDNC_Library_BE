@@ -54,5 +54,5 @@ springdoc:
 
 init:
   admin:
-    username: ${admin.username}
-    password: ${admin.password}
+    username: ${admin_username}
+    password: ${admin_password}
