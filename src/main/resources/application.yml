@@ -1,7 +1,7 @@
 spring:
   profiles:
     active:
-      - local
+      - production
 
     group:
       local:
@@ -13,11 +13,6 @@ spring:
 
       production:
         - production
-  jpa:
-    hibernate:
-      ddl-auto: create
-    open-in-view: false
-    show-sql: true
 
 init:
   excel:
