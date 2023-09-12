@@ -4,6 +4,11 @@ spring:
     username: ${db_username}
     password: ${db_password}
     driver-class-name: com.mysql.cj.jdbc.Driver  #버전에 따라 cj가 들어갈수도 안들어갈수도
+  jpa:
+    hibernate:
+      ddl-auto: ${db_ddl_auto}
+    open-in-view: false
+    show-sql: false
 
   mail:
     default-encoding: UTF-8
@@ -46,3 +51,8 @@ springdoc:
     tagsSorter: alpha
     operations-sorter: alpha
     display-request-duration: true
+
+init:
+  admin:
+    username: ${admin.username}
+    password: ${admin.password}

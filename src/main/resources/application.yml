@@ -13,20 +13,15 @@ spring:
 
       production:
         - production
-  jpa:
-    hibernate:
-      ddl-auto: update
-    open-in-view: false
-    show-sql: true
+
+init:
+  excel:
+    path: excel/baseinfo.xlsx
+
 
 lms:
   login-url: https://lms.jdnc.or.kr/auth/login_check
   my-info-url: https://lms.jdnc.or.kr/mypage/myInfo
-
-init:
-  admin:
-    username: admin
-    password: test1234
 
 cloud:
   aws:

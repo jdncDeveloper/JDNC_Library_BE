@@ -27,4 +27,8 @@ public interface BookRepository extends JpaRepository<BookInfo, Integer> {
 
     @EntityGraph(attributePaths = {"collectionInfos"})
     Optional<BookInfo> findWithBookCollectionById(Long id);
+
+    Optional<BookInfo> findByTitle(String title);
+
+    boolean existsByTitle(String title);
 }
