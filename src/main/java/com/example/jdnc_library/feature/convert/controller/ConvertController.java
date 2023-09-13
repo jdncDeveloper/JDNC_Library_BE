@@ -6,7 +6,6 @@ import com.example.jdnc_library.feature.convert.service.ConvertToExelFileService
 import io.swagger.v3.oas.annotations.Operation;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +35,7 @@ public class ConvertController {
             XSSFWorkbook workbook = convertToExelFileService.convertToExelFile(year, month);
 
             //파일 생성
-            ByteArrayOutputStream outputStream = convertToExelFileService.makeExelFile(workbook);
+            ByteArrayOutputStream outputStream = convertToExelFileService.convertToByteArrayOutputStream(workbook);
             ByteArrayResource resource = convertToExelFileService.getResource(outputStream);
 
             //파일 이름 생성
