@@ -3,12 +3,13 @@ package com.example.jdnc_library.feature.convert.service;
 import com.example.jdnc_library.exception.clienterror._400.BadRequestException;
 import jakarta.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,14 +21,15 @@ public class ConvertToExelFileService {
 
     @Transactional
     public XSSFWorkbook convertToExelFile(int year, int month) throws IOException {
+
         try {
             //엑셀 파일을 가져옵니다
-            String filePath = "src/main/resources/template.xlsm";
+            ClassPathResource resource = new ClassPathResource("template.xlsm");
 
-            FileInputStream fileInputStream = new FileInputStream(filePath);
-            XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+            InputStream fileInput = resource.getInputStream();
+            XSSFWorkbook workbook = new XSSFWorkbook(fileInput);
 
-            fileInputStream.close();
+            fileInput.close();
 
             //도서 리스트 입력
             workbook = excelBookListWriter.inputBookList(workbook);
