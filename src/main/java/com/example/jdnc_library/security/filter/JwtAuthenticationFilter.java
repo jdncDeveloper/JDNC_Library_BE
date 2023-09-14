@@ -4,21 +4,19 @@ import static com.example.jdnc_library.security.jwt.TokenProvider.AUTHORIZATION_
 import static com.example.jdnc_library.security.jwt.TokenProvider.AUTHORIZATION_HEADER_REFRESH;
 import static com.example.jdnc_library.security.jwt.TokenProvider.TOKEN_START_WITH;
 
-import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import com.example.jdnc_library.exception.clienterror._401.NotLoginException;
 import com.example.jdnc_library.security.jwt.TokenProvider;
-import com.example.jdnc_library.security.model.LoginInfo;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import com.example.jdnc_library.security.service.LmsCrawlerService;
 import com.example.jdnc_library.util.RegexUtil;
+import com.example.jdnc_library.security.model.LoginInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -54,21 +52,34 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request,
         HttpServletResponse response) throws AuthenticationException {
         try {
+            return processingLogin(request, response);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private Authentication processingLogin(HttpServletRequest request, HttpServletResponse response)
+        throws IOException {
+        try {
             LoginInfo loginInfo = objectMapper.readValue(request.getInputStream(),
                 LoginInfo.class);
 
             if (isUsernameUserFormat(loginInfo.getUsername())) {
                 authenticateUser(loginInfo, response);
             }
-            
+
             UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginInfo.getUsername(),
                     loginInfo.getPassword());
 
             return authenticationManager.authenticate(authenticationToken);
         } catch (IOException e) {
-            throw new RuntimeException("로그인 정보 파싱 실패");
+            response.sendError(400, "로그인 정보의 형태가 맞지 않습니다.");
+        } catch (NotLoginException e) {
+            response.sendError(401, "로그인에 실패했습니다.");
         }
+
+        return null;
     }
 
 
@@ -99,6 +110,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         addAccessTokenInHeaders(principalDetails, response);
         String refresh = addRefreshTokenInHeaders(response);
         updateRefresh(principalDetails, refresh);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request,
+        HttpServletResponse response, AuthenticationException failed)
+        throws IOException, ServletException {
+        response.sendError(401, "로그인 정보가 맞지 않습니다.");
     }
 
     private void updateRefresh(PrincipalDetails principalDetails, String refresh) {
