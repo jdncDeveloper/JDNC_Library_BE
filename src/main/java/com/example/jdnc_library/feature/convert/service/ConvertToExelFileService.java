@@ -21,15 +21,13 @@ public class ConvertToExelFileService {
 
     @Transactional
     public XSSFWorkbook convertToExelFile(int year, int month) throws IOException {
-
+        InputStream fileInput = null;
         try {
             //엑셀 파일을 가져옵니다
             ClassPathResource resource = new ClassPathResource("template.xlsm");
 
-            InputStream fileInput = resource.getInputStream();
+            fileInput = resource.getInputStream();
             XSSFWorkbook workbook = new XSSFWorkbook(fileInput);
-
-            fileInput.close();
 
             //도서 리스트 입력
             workbook = excelBookListWriter.inputBookList(workbook);
@@ -41,6 +39,8 @@ public class ConvertToExelFileService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadRequestException(e.getMessage());
+        } finally {
+            if (fileInput != null) fileInput.close();
         }
     }
 
@@ -49,14 +49,8 @@ public class ConvertToExelFileService {
         try (ByteArrayOutputStream fileOut = new ByteArrayOutputStream()) {
             workbook.write(fileOut);
             return fileOut;
-        }
-        catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            workbook.close();
         }
     }
 
@@ -67,10 +61,5 @@ public class ConvertToExelFileService {
         System.out.println(fileName);
 
         return fileName;
-    }
-
-    public ByteArrayResource getResource(ByteArrayOutputStream outputStream) {
-        ByteArrayResource resource = new ByteArrayResource(outputStream.toByteArray());
-        return resource;
     }
 }
