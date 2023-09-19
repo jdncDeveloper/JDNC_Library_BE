@@ -23,20 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConvertController {
 
     private final ConvertToExelFileService convertToExelFileService;
-    private final BookRepository bookRepository;
-    private final CollectionRepository collectionRepository;
 
     @GetMapping
     @Operation(summary = "엑셀 다운로드", description = "특정 기간의 대여현황을 엑셀 파일로 변환하여 리턴")
     public ResponseEntity<ByteArrayResource> convertToExelFile(@RequestParam int year, @RequestParam int month)
         throws IOException {
+        XSSFWorkbook workbook = null;
+        ByteArrayOutputStream outputStream = null;
+
         try {
             //엑셀 파일에 내용 세팅
-            XSSFWorkbook workbook = convertToExelFileService.convertToExelFile(year, month);
+            workbook = convertToExelFileService.convertToExelFile(year, month);
 
             //파일 생성
-            ByteArrayOutputStream outputStream = convertToExelFileService.convertToByteArrayOutputStream(workbook);
-            ByteArrayResource resource = convertToExelFileService.getResource(outputStream);
+            outputStream = convertToExelFileService.convertToByteArrayOutputStream(workbook);
+            ByteArrayResource resource = new ByteArrayResource(outputStream.toByteArray());
 
             //파일 이름 생성
             String fileName = convertToExelFileService.makeFileName(year, month);
@@ -46,12 +47,15 @@ public class ConvertController {
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
             headers.setContentDispositionFormData("attachment", fileName);
+
             return ResponseEntity.ok()
                 .headers(headers)
                 .contentLength(outputStream.size())
                 .body(resource);
-        } catch (Exception e) {
-            throw e;
+
+        } finally {
+            if (workbook != null) workbook.close();
+            if (outputStream != null) outputStream.close();
         }
     }
 }

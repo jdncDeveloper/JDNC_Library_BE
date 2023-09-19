@@ -8,6 +8,7 @@ import com.example.jdnc_library.domain.book.repository.CollectionRepository;
 import com.example.jdnc_library.init.InitBookInfoProvider.InitBookInfoValue;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -35,6 +36,7 @@ public class BookInfoInitializer {
         if (collectionRepository.count() > 0) return;
         XSSFWorkbook workbook = getXSSFWorkBook();
         saveExcelData(workbook);
+        workbook.close();
     }
 
     /**
@@ -44,7 +46,10 @@ public class BookInfoInitializer {
      */
     private XSSFWorkbook getXSSFWorkBook() throws IOException {
         ClassPathResource resource = new ClassPathResource("excel/baseinfo.xlsx");
-        return new XSSFWorkbook(resource.getInputStream());
+        InputStream inputStream = resource.getInputStream();
+        XSSFWorkbook workbook = new XSSFWorkbook(resource.getInputStream());
+        inputStream.close();
+        return workbook;
     }
 
     /**
