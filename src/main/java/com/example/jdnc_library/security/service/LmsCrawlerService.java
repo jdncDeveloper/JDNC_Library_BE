@@ -4,9 +4,9 @@ import com.example.jdnc_library.domain.member.model.Member;
 import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import com.example.jdnc_library.exception.clienterror._401.NotLoginException;
-import com.example.jdnc_library.security.model.LoginInfo;
 import com.example.jdnc_library.security.model.LmsTotalInfo;
 import com.example.jdnc_library.security.model.LmsUserInfo;
+import com.example.jdnc_library.security.model.LoginInfo;
 import jakarta.annotation.PostConstruct;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -75,12 +75,17 @@ public class LmsCrawlerService {
      * @return 총체적인 Lms 정보
      */
     public LmsTotalInfo getLmsLoginInfo(LoginInfo lmsLoginInfo) {
+        //로그인 및 헤더 탈취
         HttpHeaders headers = loginAndGetCookie(lmsLoginInfo.getUsername(),
             lmsLoginInfo.getPassword());
+
+        //헤더로 개인정보 페이지 접근 및 크롤링
         LmsUserInfo lmsUserInfo = getLmsUserInfo(headers);
 
         Member member = memberRepository.findByUsername(lmsLoginInfo.getUsername());
         LmsTotalInfo lmsTotalInfo;
+
+        //기존 데이터베이스에 정보가 있을경우 업데이트, 없을경우 새로 저장
         if (member == null) {
             lmsTotalInfo = LmsTotalInfo.of(createNewMember(lmsLoginInfo, lmsUserInfo));
         } else {

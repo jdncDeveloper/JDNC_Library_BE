@@ -3,8 +3,6 @@ package com.example.jdnc_library.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.jdnc_library.domain.member.model.Member;
-import com.example.jdnc_library.exception.clienterror._401.UnauthorizedException;
-import com.example.jdnc_library.security.model.PrincipalDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,14 +13,20 @@ import org.springframework.util.StringUtils;
 public class TokenProvider {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+
     public static final String AUTHORIZATION_HEADER_REFRESH = "Authorization-Refresh";
+
     public static final String TOKEN_START_WITH = "Bearer ";
+
     private final String accessSecret;
+
     private final String refreshSecret;
+
     private final String emptyHeaderMessage = "Authorization Header is empty";
+
     private final String unsupportedHeader = "해당 jwt 형식을 지원하지 않습니다";
 
-    public TokenProvider (
+    public TokenProvider(
         @Value("${jwt.access}") String access,
         @Value("${jwt.refresh}") String refresh) {
         this.accessSecret = access;
@@ -59,7 +63,7 @@ public class TokenProvider {
             return null;
         }
 
-        if (!bearerToken.startsWith(TOKEN_START_WITH)){
+        if (!bearerToken.startsWith(TOKEN_START_WITH)) {
             return null;
         }
 
@@ -73,7 +77,7 @@ public class TokenProvider {
             return null;
         }
 
-        if (!bearerToken.startsWith(TOKEN_START_WITH)){
+        if (!bearerToken.startsWith(TOKEN_START_WITH)) {
             return null;
         }
         return bearerToken.substring(7);

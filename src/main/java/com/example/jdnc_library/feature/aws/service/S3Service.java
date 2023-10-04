@@ -3,6 +3,7 @@ package com.example.jdnc_library.feature.aws.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.jdnc_library.exception.clienterror._400.BadRequestException;
+import com.example.jdnc_library.exception.clienterror._400.NotImageFileException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,8 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    private static final List<String> ALLOWED_IMAGE_EXTENSIONS = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp");
+    private static final List<String> ALLOWED_IMAGE_EXTENSIONS = Arrays.asList(".jpg", ".jpeg",
+        ".png", ".gif", ".bmp");
 
     public String uploadFile(MultipartFile file) throws IOException {
 
@@ -29,13 +31,15 @@ public class S3Service {
             throw new BadRequestException("파일이 없습니다.");
         }
 
-        validationExtension(file);
+        if (!validationExtension(file)) {
+            throw new NotImageFileException();
+        }
 
         String fileName = file.getOriginalFilename() + UUID.randomUUID();
-        ObjectMetadata metadata= new ObjectMetadata();
+        ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
-        amazonS3Client.putObject(bucket, fileName,file.getInputStream(),metadata);
+        amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
 
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
@@ -47,7 +51,7 @@ public class S3Service {
 
             // Check if the file extension is in the list of allowed image extensions
             return ALLOWED_IMAGE_EXTENSIONS.contains(fileExtension.toLowerCase());
-        }catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             throw new BadRequestException("파일명이 존재하지 않습니다.");
         }
     }

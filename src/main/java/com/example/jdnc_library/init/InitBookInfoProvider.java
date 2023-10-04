@@ -29,6 +29,7 @@ public class InitBookInfoProvider {
     @Data
     @AllArgsConstructor
     static class InitBookInfoValue {
+
         private BookGroup bookGroup;
 
         private String sheetName;

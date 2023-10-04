@@ -18,15 +18,6 @@ public interface BorrowRepository extends JpaRepository<BorrowInfo, Integer> {
 
     @EntityGraph(attributePaths = {"createdBy", "collectionInfo.bookInfo"})
     Optional<BorrowInfo> findById(long id);
-    Optional<BorrowInfo> findByCollectionInfo_BookNumber(long bookNumber);
-    Optional<BorrowInfo> findByCollectionInfo_BookNumberAndReturnDateIsNull(long bookNumber);
-    Page<BorrowInfo> findByAdminCheckIsFalse(Pageable pageable);
-
-    Page<BorrowInfo> findAllByCreatedBy(Member member, Pageable pageable);
-
-    Page<BorrowInfo> findAllByCreatedByAndReturnDateIsNull(Member member, Pageable pageable);
-
-    Page<BorrowInfo> findByCreatedAtBetweenOrAdminCheckIsFalse(LocalDateTime startOfMonth, LocalDateTime endOfMonth, Pageable pageable);
 
     List<BorrowInfo> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 

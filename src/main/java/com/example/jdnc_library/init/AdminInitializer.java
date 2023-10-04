@@ -5,7 +5,6 @@ import com.example.jdnc_library.domain.member.model.Role;
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;

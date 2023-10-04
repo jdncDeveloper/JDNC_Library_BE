@@ -1,7 +1,6 @@
 package com.example.jdnc_library.feature.book.repository;
 
 import static com.example.jdnc_library.domain.book.model.QBookInfo.bookInfo;
-import static com.example.jdnc_library.domain.book.model.QBorrowInfo.borrowInfo;
 import static com.example.jdnc_library.domain.book.model.QCollectionInfo.collectionInfo;
 
 import com.example.jdnc_library.domain.book.model.BookGroup;
@@ -22,7 +21,7 @@ public class BookInfoQueryRepository extends Querydsl4RepositorySupport {
         super(BookInfo.class);
     }
 
-    public Page<BookListDTO> getBookListDTOs(String title, BookGroup bookGroup,Pageable pageable) {
+    public Page<BookListDTO> getBookListDTOs(String title, BookGroup bookGroup, Pageable pageable) {
         JPAQuery<BookListDTO> jpaQuery = select(
             Projections.constructor(
                 BookListDTO.class,
@@ -45,7 +44,6 @@ public class BookInfoQueryRepository extends Querydsl4RepositorySupport {
 
         //collectionInfo.available = 이미 left join에서 필터링햇기때문에 해당 컬럼을 조회 하는 건 문제가 없다
         //group by - id로 그룹 지어줘서 bookInfo에는 문제가 없다.
-
 
         if (bookGroup != null) {
             jpaQuery.where(bookInfo.bookGroup.eq(bookGroup));

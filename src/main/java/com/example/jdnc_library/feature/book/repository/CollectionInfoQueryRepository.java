@@ -1,7 +1,6 @@
 package com.example.jdnc_library.feature.book.repository;
 
 import static com.example.jdnc_library.domain.book.model.QBookInfo.bookInfo;
-import static com.example.jdnc_library.domain.book.model.QBorrowInfo.borrowInfo;
 import static com.example.jdnc_library.domain.book.model.QCollectionInfo.collectionInfo;
 
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
