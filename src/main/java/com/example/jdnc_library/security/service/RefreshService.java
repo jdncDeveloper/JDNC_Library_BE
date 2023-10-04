@@ -25,23 +25,28 @@ public class RefreshService {
 
     private final TokenProvider tokenProvider;
 
-    public void reGenerateToken (HttpServletRequest request, HttpServletResponse response) {
+    public void reGenerateToken(HttpServletRequest request, HttpServletResponse response) {
         String jwt = tokenProvider.resolveAccessTokenByHeader(request);
         String refresh = tokenProvider.resolveRefreshTokenByHeader(request);
-        if (jwt.isEmpty()) throw new NotLoginException("Authorization is Empty");
-        if (refresh.isEmpty()) throw new NotLoginException("Authorization_Refresh is Empty");
+        if (jwt.isEmpty()) {
+            throw new NotLoginException("Authorization is Empty");
+        }
+        if (refresh.isEmpty()) {
+            throw new NotLoginException("Authorization_Refresh is Empty");
+        }
 
         try {
             tokenProvider.parseIdByJwt(jwt);
             throw new TokenNotExpiredException();
-        }catch (TokenExpiredException e) {
-
+        } catch (TokenExpiredException e) {
             try {
                 Long id = JWT.decode(jwt).getClaim("id").asLong();
-                Member member = memberRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, Member.class));
+                Member member = memberRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException(id, Member.class));
 
                 if (!member.getRefresh().equals(refresh)) {
-                    throw new NotEqualRefreshTokenException(String.valueOf(member.getId()), refresh);
+                    throw new NotEqualRefreshTokenException(String.valueOf(member.getId()),
+                        refresh);
                 }
 
                 String newRefresh = tokenProvider.createRefreshToken();

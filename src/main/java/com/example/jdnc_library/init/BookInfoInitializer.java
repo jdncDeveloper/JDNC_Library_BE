@@ -32,8 +32,12 @@ public class BookInfoInitializer {
     @PostConstruct
     @Transactional(rollbackFor = RuntimeException.class)
     public void init() throws IOException {
-        if (bookRepository.count() > 0) return;
-        if (collectionRepository.count() > 0) return;
+        if (bookRepository.count() > 0) {
+            return;
+        }
+        if (collectionRepository.count() > 0) {
+            return;
+        }
         XSSFWorkbook workbook = getXSSFWorkBook();
         saveExcelData(workbook);
         workbook.close();
@@ -41,6 +45,7 @@ public class BookInfoInitializer {
 
     /**
      * 엑셀 데이터 가져오기
+     *
      * @return
      * @throws IOException
      */
@@ -54,6 +59,7 @@ public class BookInfoInitializer {
 
     /**
      * 엑셀 데이터를 기반으로 데이터베이스 저장
+     *
      * @param workbook
      */
     private void saveExcelData(XSSFWorkbook workbook) {
@@ -80,15 +86,19 @@ public class BookInfoInitializer {
                 BookInfo bookInfo;
 
                 //title이 같을경우 이전 엔티티 참조
-                if (beforeTitle.equals(title)) bookInfo = beforeBookInfo;
-                else bookInfo = getBookInfo(title, initValue.getBookGroup());
+                if (beforeTitle.equals(title)) {
+                    bookInfo = beforeBookInfo;
+                } else {
+                    bookInfo = getBookInfo(title, initValue.getBookGroup());
+                }
 
                 if (bookInfo == null) {
                     break;
                 }
 
                 //새로운 소장정보 생성
-                CollectionInfo collectionInfo = createCollectionInfoByExcelRow(row, bookInfo, initValue);
+                CollectionInfo collectionInfo = createCollectionInfoByExcelRow(row, bookInfo,
+                    initValue);
 
                 //소장정보 저장
                 collectionRepository.save(collectionInfo);
@@ -98,11 +108,11 @@ public class BookInfoInitializer {
         }
     }
 
-    private CollectionInfo createCollectionInfoByExcelRow(XSSFRow row,BookInfo bookInfo, InitBookInfoValue infoValue) {
+    private CollectionInfo createCollectionInfoByExcelRow(XSSFRow row, BookInfo bookInfo,
+        InitBookInfoValue infoValue) {
         Long bookNumber = getBookNumberByRow(row, infoValue);
         return new CollectionInfo(bookInfo, bookNumber);
     }
-
 
 
     private Long getBookNumberByRow(XSSFRow row, InitBookInfoValue infoValue) {

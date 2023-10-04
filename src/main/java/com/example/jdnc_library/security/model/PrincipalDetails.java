@@ -25,7 +25,9 @@ public class PrincipalDetails implements UserDetails { //이렇게 하면 Authen
     //해당 유저의 권한을 리턴하는 곳
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (member == null) return null;
+        if (member == null) {
+            return null;
+        }
         Collection<GrantedAuthority> collect = new ArrayList<>();
         collect.add(member.getRole());
         return collect;

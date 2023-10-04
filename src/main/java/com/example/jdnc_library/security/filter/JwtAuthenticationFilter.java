@@ -7,10 +7,10 @@ import static com.example.jdnc_library.security.jwt.TokenProvider.TOKEN_START_WI
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import com.example.jdnc_library.exception.clienterror._401.NotLoginException;
 import com.example.jdnc_library.security.jwt.TokenProvider;
+import com.example.jdnc_library.security.model.LoginInfo;
 import com.example.jdnc_library.security.model.PrincipalDetails;
 import com.example.jdnc_library.security.service.LmsCrawlerService;
 import com.example.jdnc_library.util.RegexUtil;
-import com.example.jdnc_library.security.model.LoginInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -96,10 +96,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return RegexUtil.isEightNumber(username);
     }
 
-    private boolean isUsernameAdminFormat(String username) {
-        return username.startsWith("admin");
-    }
-
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult)
@@ -107,8 +103,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
+        //헤더 삽입
         addAccessTokenInHeaders(principalDetails, response);
         String refresh = addRefreshTokenInHeaders(response);
+
+        //DB저장
         updateRefresh(principalDetails, refresh);
     }
 
@@ -124,7 +123,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         memberRepository.save(principalDetails.getMember());
     }
 
-    private String addAccessTokenInHeaders(PrincipalDetails principalDetails, HttpServletResponse response) {
+    private String addAccessTokenInHeaders(PrincipalDetails principalDetails,
+        HttpServletResponse response) {
         String jwtToken = tokenProvider.createAccessToken(principalDetails.getMember());
         response.addHeader(AUTHORIZATION_HEADER, TOKEN_START_WITH + jwtToken);
         return jwtToken;
