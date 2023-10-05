@@ -9,7 +9,7 @@ public class BookGroupMvcConverter implements Converter<String, BookGroup> {
     public BookGroup convert(String source) {
         try {
             return BookGroup.valueOf(source);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }

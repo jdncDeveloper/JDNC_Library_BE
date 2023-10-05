@@ -56,7 +56,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 chain.doFilter(request, response);
-            } catch (TokenExpiredException e) {
+            } catch (TokenExpiredException | EntityNotFoundException e) {
                 response.sendError(401, e.getMessage());
             }
         }

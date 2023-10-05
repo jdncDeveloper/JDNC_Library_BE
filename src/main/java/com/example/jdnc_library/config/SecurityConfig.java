@@ -1,7 +1,5 @@
 package com.example.jdnc_library.config;
 
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-
 import com.example.jdnc_library.domain.member.repository.MemberRepository;
 import com.example.jdnc_library.security.filter.JwtAuthenticationFilter;
 import com.example.jdnc_library.security.filter.JwtAuthorizationFilter;
@@ -91,7 +89,6 @@ public class SecurityConfig {
             httpSecurityExceptionHandlingConfigurer
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint));
-
 
         return http.build();
     }

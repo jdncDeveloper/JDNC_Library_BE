@@ -28,9 +28,11 @@ public class RefreshService {
     public void reGenerateToken(HttpServletRequest request, HttpServletResponse response) {
         String jwt = tokenProvider.resolveAccessTokenByHeader(request);
         String refresh = tokenProvider.resolveRefreshTokenByHeader(request);
+
         if (jwt.isEmpty()) {
             throw new NotLoginException("Authorization is Empty");
         }
+
         if (refresh.isEmpty()) {
             throw new NotLoginException("Authorization_Refresh is Empty");
         }

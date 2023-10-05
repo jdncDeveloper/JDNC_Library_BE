@@ -1,5 +1,6 @@
 package com.example.jdnc_library.domain.book.repository;
 
+import com.example.jdnc_library.domain.book.model.BookGroup;
 import com.example.jdnc_library.domain.book.model.BookInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +24,6 @@ public interface BookRepository extends JpaRepository<BookInfo, Integer> {
     Optional<BookInfo> findWithBookCollectionById(Long id);
 
     Optional<BookInfo> findByTitle(String title);
+
+    Page<BookInfo> findByTitleAndBookGroup(String title, BookGroup bookGroup, Pageable pageable);
 }

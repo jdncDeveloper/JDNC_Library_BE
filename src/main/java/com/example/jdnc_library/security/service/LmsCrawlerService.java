@@ -261,6 +261,7 @@ public class LmsCrawlerService {
         }
     }
 
+    //SunCertPathBuilderException 우회
     private void setSSL() throws KeyManagementException, NoSuchAlgorithmException {
         //ssl 우회인증
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {

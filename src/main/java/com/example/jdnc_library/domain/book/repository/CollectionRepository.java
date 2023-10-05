@@ -24,4 +24,6 @@ public interface CollectionRepository extends JpaRepository<CollectionInfo, Long
     int countByAvailableTrue();
 
     int countByLostIsFalse();
+
+    Page<CollectionInfo> findAllByBookInfo_TitleContaining(String title, Pageable pageable);
 }

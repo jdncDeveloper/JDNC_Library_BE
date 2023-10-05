@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 LoginInfo.class);
 
             if (isUsernameUserFormat(loginInfo.getUsername())) {
-                authenticateUser(loginInfo, response);
+                authenticateUser(loginInfo);
             }
 
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -76,20 +76,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException e) {
             response.sendError(400, "로그인 정보의 형태가 맞지 않습니다.");
         } catch (NotLoginException e) {
-            response.sendError(401, "로그인에 실패했습니다.");
+            response.sendError(401, e.getMessage());
         }
 
         return null;
     }
 
 
-    private void authenticateUser(LoginInfo lmsLoginInfo, HttpServletResponse response)
-        throws IOException {
-        try {
-            lmsCrawlerService.getLmsLoginInfo(lmsLoginInfo);
-        } catch (NotLoginException e) {
-            response.sendError(401, e.getMessage());
-        }
+    private void authenticateUser(LoginInfo lmsLoginInfo) throws IOException {
+        lmsCrawlerService.getLmsLoginInfo(lmsLoginInfo);
     }
 
     private boolean isUsernameUserFormat(String username) {

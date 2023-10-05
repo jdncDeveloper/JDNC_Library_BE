@@ -5,7 +5,7 @@ import com.example.jdnc_library.domain.book.model.BookInfo;
 import com.example.jdnc_library.domain.book.model.CollectionInfo;
 import com.example.jdnc_library.domain.book.repository.BookRepository;
 import com.example.jdnc_library.domain.book.repository.CollectionRepository;
-import com.example.jdnc_library.init.InitBookInfoProvider.InitBookInfoValue;
+import com.example.jdnc_library.init.BookInfoInitProvider.BookInfoInitValue;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +27,7 @@ public class BookInfoInitializer {
 
     private final CollectionRepository collectionRepository;
 
-    private final InitBookInfoProvider initProvider;
+    private final BookInfoInitProvider initProvider;
 
     @PostConstruct
     @Transactional(rollbackFor = RuntimeException.class)
@@ -63,9 +63,9 @@ public class BookInfoInitializer {
      * @param workbook
      */
     private void saveExcelData(XSSFWorkbook workbook) {
-        List<InitBookInfoValue> infoValues = initProvider.getValueList();
+        List<BookInfoInitValue> infoValues = initProvider.getValueList();
 
-        for (InitBookInfoValue initValue : infoValues) {
+        for (BookInfoInitValue initValue : infoValues) {
             //시트 추출
             XSSFSheet sheet = workbook.getSheet(initValue.getSheetName());
 
@@ -109,13 +109,13 @@ public class BookInfoInitializer {
     }
 
     private CollectionInfo createCollectionInfoByExcelRow(XSSFRow row, BookInfo bookInfo,
-        InitBookInfoValue infoValue) {
+        BookInfoInitValue infoValue) {
         Long bookNumber = getBookNumberByRow(row, infoValue);
         return new CollectionInfo(bookInfo, bookNumber);
     }
 
 
-    private Long getBookNumberByRow(XSSFRow row, InitBookInfoValue infoValue) {
+    private Long getBookNumberByRow(XSSFRow row, BookInfoInitValue infoValue) {
         return (long) row.getCell(infoValue.getBeginColumn()).getNumericCellValue();
     }
 
@@ -129,7 +129,7 @@ public class BookInfoInitializer {
             .orElseGet(() -> bookRepository.save(new BookInfo(title, bookGroup)));
     }
 
-    private String parseTitleByExcel(XSSFRow row, InitBookInfoValue infoValue) {
+    private String parseTitleByExcel(XSSFRow row, BookInfoInitValue infoValue) {
         return row.getCell(infoValue.getBeginColumn() + 1).getStringCellValue();
     }
 }
